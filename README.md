@@ -3,7 +3,8 @@
 
 Repositório para a disciplina de Engenharia de Software na Fundação Getúlio Vargas
 
-Grupo: Daniel de Miranda Almeida,
+Grupo: 
+Daniel de Miranda Almeida - 241708065
 
 # Tarefa de casos de uso e histórias de usuário
 
