@@ -1,7 +1,9 @@
 <!-- Configurações da página -->
+---
 layout: page
 title: "Tarefa - Cap. 4"
 permalink: /casos-uso-historias-usuario
+---
 
 # Tarefa de casos de uso e histórias de usuário
 
