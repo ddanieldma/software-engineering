@@ -94,6 +94,8 @@ Como **Usuário do aplicativo**, preciso de **escolher entre cartão de crédito
 | **Resposta**   | O sistema confirma o cadastro com uma mensagem de sucesso e redireciona o usuário para a página do seu perfil. |
 | **Comentários**| O sistema deve garantir que nenhuma conta com o número de matrícula fornecido já exista. Caso uma duplicata seja detectada, o cadastro será rejeitado, informando ao usuário. Todas as informações fornecidas devem ser armazenadas de forma segura. |
 
+<img src="imgs\Caso de Uso - Cadastro de Conta.jpg" alt="Diagrama de caso de uso do cadastro de conta de Usuário">
+
 ##### Estória de Usuário
 
 **Gerar Relatório de Vendas**
