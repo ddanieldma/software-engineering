@@ -140,6 +140,10 @@ Como **usuário**, gostaria de **receber notificações com promoções de itens
 
 <img src="imgs\Use case Lunardon.png" alt="Diagrama de caso de uso das opções de privacidade do histórico">
 
+Estória de usuário.
+
+Como cliente, desejo receber sugestões de produtos personalizadas com base no meu histórico de compras para encontrar facilmente produtos que correspondam aos meus interesses e melhorar minha experiência de compra.
+
 ## 5. Conclusão
 Este documento descreveu as principais funcionalidades que o sistema deve apresentar para atender às expectativas dos usuários e garantir a segurança e privacidade dos dados.
 
