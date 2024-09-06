@@ -136,6 +136,8 @@ Como **usuário**, gostaria de **receber notificações com promoções de itens
 | Resposta   | O sistema confirma a alteração das configurações de privacidade, enviando uma notificação para o usuário. Caso haja erro, o sistema solicita que o usuário tente novamente. |
 | Comentários| Todas as informações do usuário devem ser armazenadas com segurança, em conformidade com as normas de proteção de dados.|
 
+<img src="imgs\Use case Lunardon.png" alt="Diagrama de caso de uso das opções de privacidade do histórico">
+
 ## 5. Conclusão
 Este documento descreveu as principais funcionalidades que o sistema deve apresentar para atender às expectativas dos usuários e garantir a segurança e privacidade dos dados.
 
