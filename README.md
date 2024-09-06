@@ -62,7 +62,7 @@ Tarefa: criação de um caso de uso e uma história de usuário de um determinad
 
 ##### Caso de uso
 **Envio de mensagens privadas entre usuários**
-(Ref. 24 da Antônia)
+(Ref. 24)
 
 | **Atributo** | **Detalhes** |
 |--------------|--------------|
@@ -77,7 +77,7 @@ Tarefa: criação de um caso de uso e uma história de usuário de um determinad
 
 ##### Estória de Usuário
 **Usuário escolhe entre cartão de débito ou crédito como forma de pagamento dentro do aplicativo**
-(Ref. 01 do Klebson)
+(Ref. 01)
 
 Como **Usuário do aplicativo**, preciso de **escolher entre cartão de crédito ou débito** como **forma de pagamento para adição de moedas virtuais à minha conta no sistema**
 
@@ -85,7 +85,7 @@ Como **Usuário do aplicativo**, preciso de **escolher entre cartão de crédito
 
 ##### Caso de Uso 
 **Cadastro de Conta de Usuário** 
-(Ref. 22 da Antônia)
+(Ref. 22)
 
 | **Atributo** | **Detalhes** |
 |--------------|--------------|
@@ -101,7 +101,7 @@ Como **Usuário do aplicativo**, preciso de **escolher entre cartão de crédito
 ##### Estória de Usuário
 
 **Gerar Relatório de Vendas**
-(Ref. 20 ou 21 do Klebson)
+(Ref. 21)
 
 Como **dono de uma empresa de vending machines**, gostaria de **gerar um relatório de vendas personalizável em formato CSV**, para que, em seguida, **possa enviá-lo à minha equipe de analistas, facilitando o processo de análise de vendas**.
 
@@ -109,7 +109,7 @@ Como **dono de uma empresa de vending machines**, gostaria de **gerar um relató
 
 ##### Caso de Uso 
 **Criação de grupos com interesses em comum** 
-(Ref. 25 da Antônia)
+(Ref. 25)
 
 | **Atributo** | **Detalhes** |
 |--------------|--------------|
@@ -124,7 +124,7 @@ Como **dono de uma empresa de vending machines**, gostaria de **gerar um relató
 ##### Estória de Usuário
 
 **Notificações que o usuário recebe**
-(Ref. 18 do Klebson)
+(Ref. 18)
 
 Como **usuário**, gostaria de **receber notificações com promoções de itens que eu gosto e ter recomendações baseadas no meu histórico**, para que **eu possa consumir pagando menos.**.
 
@@ -141,6 +141,13 @@ Como **usuário**, gostaria de **receber notificações com promoções de itens
 | Comentários| Todas as informações do usuário devem ser armazenadas com segurança, em conformidade com as normas de proteção de dados.|
 
 <img src="imgs\Use case Lunardon.png" alt="Diagrama de caso de uso das opções de privacidade do histórico">
+
+#### Estória de usuário.
+
+**Produtos personalizados**
+(Ref. 15)
+
+Como cliente, desejo receber sugestões de produtos personalizadas com base no meu histórico de compras para encontrar facilmente produtos que correspondam aos meus interesses e melhorar minha experiência de compra.
 
 ## 5. Conclusão
 Este documento descreveu as principais funcionalidades que o sistema deve apresentar para atender às expectativas dos usuários e garantir a segurança e privacidade dos dados.
