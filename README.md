@@ -103,12 +103,31 @@ Como **dono de uma empresa de vending machines**, gostaria de **gerar um relató
 
 #### Lívia
 
-### Lunardon
+##### Caso de Uso 
+**Criação de grupos com interesses em comum** 
+(Ref. 25 da Antônia)
+
+| **Atributo** | **Detalhes** |
+|--------------|--------------|
+| **Atores**   | Usuário |
+| **Descrição**  | O usuário acessa a tela principal. Ao clicar em “Novo grupo” no menu, irá aparecer outra tela. Nela, ele vai adicionar o nome do grupo, tags relacionadas ao tema do grupo e selecionar se ele será público ou privado. |
+| **Dados**  | Não se aplica. |
+| **Estímulo**   | O usuário seleciona o ícone de criação de grupo na página inicial. |
+| **Resposta**   | O sistema confirma a criação do grupo com uma mensagem de sucesso e disponibiliza um link de convite do grupo. Em seguida, redireciona o usuário para o grupo. Caso o grupo seja público, ele poderá ser apresentado para outros usuários com interesses em comum. |
+
+##### Estória de Usuário
+
+**Notificações que o usuário recebe**
+(Ref. 18 do Klebson)
+
+Como **usuário**, gostaria de **receber notificações com promoções de itens que eu gosto e ter recomendações baseadas no meu histórico**, para que **eu possa consumir pagando menos.**.
+
+#### Lunardon
 
 (Ref. 26 Opção de privacidade do histórico de uso da aplicação)
 | Atributo | Detalhes |
 |--------------|--------------|
-| Atores   | Aluno (usuário), Sistema |
+| Atores   | Usuário, Sistema |
 | Descrição  | O usuário autenticado acessa as configurações de privacidade, em um local adequado da aplicação e escolhe se deseja tornar público ou privado seu histórico de uso.  Por padrão, o histórico é público, conforme descrito nos termos de uso. Após cada escolha do usuário, o sistema deve enviar essa informação para um servidor central.|
 | Dados  | Estado do histórico de uso (público ou privado) |
 | Estímulo   | O usuário, após criar sua conta e se autenticar, entra na seção de configurações de privacidade.|
@@ -117,3 +136,4 @@ Como **dono de uma empresa de vending machines**, gostaria de **gerar um relató
 
 ## 5. Conclusão
 Este documento descreveu as principais funcionalidades que o sistema deve apresentar para atender às expectativas dos usuários e garantir a segurança e privacidade dos dados.
+
