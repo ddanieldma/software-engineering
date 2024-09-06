@@ -117,6 +117,8 @@ Como **dono de uma empresa de vending machines**, gostaria de **gerar um relató
 | **Estímulo**   | O usuário seleciona o ícone de criação de grupo na página inicial. |
 | **Resposta**   | O sistema confirma a criação do grupo com uma mensagem de sucesso e disponibiliza um link de convite do grupo. Em seguida, redireciona o usuário para o grupo. Caso o grupo seja público, ele poderá ser apresentado para outros usuários com interesses em comum. |
 
+<img src="imgs\Caso - Novo grupo.jpg" alt="Diagrama de caso de criação de novo grupo">
+
 ##### Estória de Usuário
 
 **Notificações que o usuário recebe**
