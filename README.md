@@ -15,6 +15,25 @@ Tarefa: criação de um caso de uso e uma história de usuário de um determinad
 
 ### Daniel
 
+#### Caso de uso
+**Envio de mensagens privadas entre usuários**
+(Ref. 24 da Antônia)
+
+| **Atributo** | **Detalhes** |
+|--------------|--------------|
+| **Atores**   | Usuário |
+| **Descrição**  | O usuário, pela tela inicial do aplicativo, entra numa aba com uma lista das pessoas que ele segue e pode escolher uma das pessoas dessa lista. Essa escolha leva pra uma tela de chat onde os usuários podem enviar mensagens um para o outro. Essas mensagens são poderão ser vistas pelos dois usuários presentes no chat |
+| **Dados**  | Mensagens |
+| **Estímulo**   | O usuário entra no chat, escreve uma mensagem e pressiona o botão de enviar |
+| **Resposta**   | O sistema coloca a mensagem no chat, visível para ambos os usuários |
+| **Comentários**| O sistema deve armazenar o histórico de mensagens por um tempo definido. Usuários devem poder apagar mensagens enviadas. |
+
+#### Estória de Usuário
+**Usuário escolhe entre cartão de débito ou crédito como forma de pagamento dentro do aplicativo**
+(Ref. 01 do Klebson)
+
+Como **Usuário do aplicativo**, preciso de **escolher entre cartão de crédito ou débito** como **forma de pagamento para adição de moedas virtuais à minha conta no sistema**
+
 ### Gustavo
 
 #### Caso de Uso 
