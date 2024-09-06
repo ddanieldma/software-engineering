@@ -129,8 +129,10 @@ Como **dono de uma empresa de vending machines**, gostaria de **gerar um relató
 Como **usuário**, gostaria de **receber notificações com promoções de itens que eu gosto e ter recomendações baseadas no meu histórico**, para que **eu possa consumir pagando menos.**.
 
 #### Lunardon
+##### Caso de Uso
+**Opção de privacidade do histórico de uso da aplicação**
+(Ref. 26)
 
-(Ref. 26 Opção de privacidade do histórico de uso da aplicação)
 | Atributo | Detalhes |
 |--------------|--------------|
 | Atores   | Usuário, Sistema |
