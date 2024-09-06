@@ -73,6 +73,8 @@ Tarefa: criação de um caso de uso e uma história de usuário de um determinad
 | **Resposta**   | O sistema coloca a mensagem no chat, visível para ambos os usuários |
 | **Comentários**| O sistema deve armazenar o histórico de mensagens por um tempo definido. Usuários devem poder apagar mensagens enviadas. |
 
+<img src="imgs\Use Case - Mensagens Privadas.jpg" alt="Diagrama de caso de uso do cadastro de conta de Usuário">
+
 ##### Estória de Usuário
 **Usuário escolhe entre cartão de débito ou crédito como forma de pagamento dentro do aplicativo**
 (Ref. 01 do Klebson)
