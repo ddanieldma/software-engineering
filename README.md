@@ -62,7 +62,7 @@ Tarefa: criação de um caso de uso e uma história de usuário de um determinad
 
 ##### Caso de uso
 **Envio de mensagens privadas entre usuários**
-(Ref. 24)
+(Ref. 23)
 
 | **Atributo** | **Detalhes** |
 |--------------|--------------|
@@ -104,6 +104,12 @@ Como **Usuário do aplicativo**, preciso de **escolher entre cartão de crédito
 (Ref. 21)
 
 Como **dono de uma empresa de vending machines**, gostaria de **gerar um relatório de vendas personalizável em formato CSV**, para que, em seguida, **possa enviá-lo à minha equipe de analistas, facilitando o processo de análise de vendas**.
+
+**Visualizar histórico público**
+(Ref. 24)
+
+Como **usuário**, gostaria de ser capaz de **visualizar o histórico de compras de perfis configurados como público** para **acompanhar tendências de consumo e realizar comparações com meu próprio histórico**.
+
 
 #### Lívia
 
