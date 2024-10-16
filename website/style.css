@@ -1,0 +1,102 @@
+/* Reset de margens e paddings globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos gerais do body */
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Cabeçalho estilizado com fundo azul e texto centralizado */
+header {
+    background: #348cc9;
+    color: #fff;
+    text-align: center;
+    padding: 50px 0;
+}
+
+/* Tamanho do título e do texto no cabeçalho */
+header h1 {
+    font-size: 3em;
+}
+
+header p {
+    font-size: 1.2em;
+}
+
+/* Menu de navegação com links inline */
+header nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Links de navegação com hover e transições suaves */
+header nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+header nav ul li a {
+    color: white;
+    background-color: transparent;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Efeito hover para os links */
+header nav ul li a:hover {
+    background-color: white;
+    color: black;
+}
+
+/* Botão de chamada para ação com hover */
+.cta-btn {
+    background-color: #fff;
+    color: #348cc9;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.cta-btn:hover {
+    background-color: #ddd;
+}
+
+/* Estilos gerais para navegação */
+nav ul {
+    list-style: none;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+/* Links da navegação */
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Estilos para seções com padding */
+section {
+    padding: 50px;
+    text-align: center;
+}
+
+/* Rodapé */
+footer {
+    background-color: #9f9b9b;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
