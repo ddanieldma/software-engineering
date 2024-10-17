@@ -4,7 +4,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    flex-direction: column;
+    padding: 20px;
 }
 
 .container {
@@ -15,7 +17,7 @@ body {
     max-width: 1200px;
 }
 
-.item {
+.item, .product-item {
     background-color: #ffffff;
     border: 1px solid #ddd;
     padding: 20px;
@@ -28,10 +30,20 @@ body {
     text-align: center;
 }
 
-.item h3 {
-    margin: 0 0 10px 0;
+.item button, .product-item button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
-.item p {
-    margin: 5px 0;
+.item button:hover, .product-item button:hover {
+    background-color: #0056b3;
+}
+
+h1, p {
+    margin: 10px 0;
 }
