@@ -22,12 +22,15 @@ Preparação do banco de dados
 
 Crie um arquivo .env com as seguintes váriaveis
 
-MYSQL_USER=root                 # Padrão do MySQL ou outro usuário criado durante a instalação
-MYSQL_PASSWORD=sua_senha         # A senha criada durante a instalação do MySQL
-FLASK_SECRET_KEY=secret          # Qualquer chave desejada para a aplicação Flask
+MYSQL_USER=root         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       # Padrão do MySQL ou outro usuário criado durante a instalação
+
+MYSQL_PASSWORD=sua_senha   &nbsp;&nbsp;&nbsp;    # A senha criada durante a instalação do MySQL
+
+FLASK_SECRET_KEY=secret    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    # Qualquer chave desejada para a aplicação Flask
 
 
 Em seguida execute os arquivos na pasta database na seguinte ordem
+
 create_db.py
 
 ```bash
