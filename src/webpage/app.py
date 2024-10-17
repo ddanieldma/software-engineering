@@ -5,6 +5,7 @@ import hashlib
 import os
 import mysql.connector
 from get_complete_data import vending_machines_products, problem_reports
+from user import PersonDB
 
 load_dotenv()
 
@@ -32,6 +33,11 @@ def login():
             if user:
                 session['user_id'] = user[0]
                 flash('Login concluido!', 'success')
+                user_object = PersonDB(user[0])
+
+                if user_object.get_name() == "admin" or user_object.is_admin():
+                    return redirect('/admin')
+                
                 return redirect('/')
             else:
                 flash('Invalid email or password', 'danger')
@@ -86,7 +92,7 @@ def products_page(location):
         return render_template('products.html', vending_machine=vending_machine, machine_products=machine_products)
     return redirect(url_for('vending_machines_page'))
 
-@app.route('/report-problem', methods=['GET', 'POST'])
+@app.route('/report_problem', methods=['GET', 'POST'])
 def report_problem():
     if 'user_id' not in session:
         flash('Please log in to access this page', 'danger')
@@ -109,10 +115,10 @@ def report_problem():
             cursor.close()
             conn.close()
             flash('Problem report submitted successfully!', 'success')
-            return redirect('/report-problem')
+            return redirect('/report_problem')
         except Exception as err:
             flash(f'Error: {err}', 'danger')
-            return redirect('/report-problem')
+            return redirect('/report_problem')
 
     return render_template('report_problem.html')
 
@@ -131,6 +137,10 @@ def report_page(report_id):
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/admin')
+def admin_page():
+    return render_template('admin_page.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
