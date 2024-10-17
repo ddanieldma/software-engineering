@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import hashlib
 import os
 import mysql.connector
-from get_products import products_list
+from get_products import products_dict
 
 load_dotenv()
 
@@ -44,7 +44,7 @@ def register():
 
 @app.route('/products')
 def products():
-    return render_template('products.html', items=products_list)
+    return render_template('products.html', items=products_dict)
 
 @app.route('/')
 def home():

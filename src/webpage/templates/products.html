@@ -6,10 +6,11 @@
 </head>
 <body>
     <div class="container">
-        {% for item in items %}
+        {% for product, quantity in items.items() %}
         <div class="item">
-            <h3>{{ item.get_name() }}</h3>
-            <p><strong>{{ item.get_price() }}</strong></p>
+            <h3>{{ product }}</h3>
+            <p>Quantity: {{ quantity }}</p>
+            <p><strong>R$ {{ product.get_price() }}</strong></p>
         </div>
         {% endfor %}
     </div>
