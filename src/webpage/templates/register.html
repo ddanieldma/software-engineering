@@ -3,10 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Criar Conta</title>
+    <link rel="stylesheet" href="../static/css_file.css">
 </head>
 <body>
-    <h1>Register User</h1>
+  <header>
+    <div class="top-bar">
+        <h1>COFFEMAP</h1>
+        <div class="header-options">
+            <div class="language-buttons">
+                <button class="active">PT</button>
+                <button>EN</button>
+                <button>ES</button>
+            </div>
+
+        </div>
+    </div>
+    <nav class="navbar">
+        <ul> <!-- Menu de navegação -->
+            <li><a href="index.html">Início</a></li>
+            <li><a href="create_account.html" class="active">Criar conta</a></li>
+            <li><a href="entrar.html">Entrar</a></li>
+        </ul>
+    </nav>
+</header>
     
     <!-- Display flash messages if they exist -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -18,15 +38,19 @@
         </ul>
       {% endif %}
     {% endwith %}
-    
-    <form method="POST" action="/register">
-        <label for="nome">Name:</label>
-        <input type="text" id="nome" name="nome" required><br><br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
-        <label for="senha">Password:</label>
-        <input type="password" id="senha" name="senha" required><br><br>
-        <input type="submit" value="Register">
-    </form>
+    <div class="container">
+      <form method="POST" action="/register">
+          <label for="nome">Nome:</label>
+          <input type="text" id="nome" name="nome" required><br><br>
+          <label for="email">E-mail:</label>
+          <input type="email" id="email" name="email" required><br><br>
+          <label for="senha">Senha:</label>
+          <input type="password" id="senha" name="senha" required><br><br>
+          <button type="submit" value="Register">Criar Conta</button>
+      </form>
+    </div>
 </body>
+<footer>
+  <p>&copy;coffemap</p> <!-- Rodapé da página -->
+</footer>
 </html>
