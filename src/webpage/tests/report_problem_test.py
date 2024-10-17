@@ -60,8 +60,6 @@ def db():
     yield conn
 
     # Clean up - drop tables after testing
-    cursor.execute("DROP TABLE problemas_reportados")
-    cursor.execute("DROP TABLE usuarios")
     conn.commit()
     cursor.close()
     conn.close()
@@ -86,12 +84,13 @@ def test_report_problem_page_loads(client):
 # Test submitting a problem report
 def test_submit_problem_report(client, db):
     with client.session_transaction() as session:
-        session['user_id'] = 1  # Use a valid user ID
+        session['user_id'] = 43  # Use a valid user ID
 
     response = client.post('/report-problem', data={
         'tipo_problema': 'Vending Machine',
         'descricao': 'The vending machine is not working properly.',
-        'id_maquina': 1
+        'status': 'Aberto',
+        'id_maquina': 235
     }, follow_redirects=True)
 
     print(response.data)
