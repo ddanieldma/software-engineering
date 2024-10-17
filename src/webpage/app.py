@@ -13,6 +13,29 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT * FROM usuarios WHERE email = %s AND senha_hash = %s
+            """, (email, password_hash))
+            user = cursor.fetchone()
+            cursor.close()
+            conn.close()
+
+            if user:
+                session['user_id'] = user[0]
+                flash('Login concluido!', 'success')
+            else:
+                flash('Invalid email or password', 'danger')
+        except Exception as err:
+            flash(f'Error: {err}', 'danger')
+
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
