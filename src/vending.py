@@ -206,7 +206,7 @@ class Product:
         Returns:
             str: The product's name and vending machine ID.
         """
-        return f"(VM {self._id_vending_machine}) {self._name}" 
+        return self._name
 
 
 # Vending place superclass
@@ -356,6 +356,15 @@ class VendingMachine:
         self._location: str | None = None
         self._id: int = id
         self._stock: defaultdict = defaultdict(int)  # Cache for product stock
+
+    def get_id(self) -> int:
+        """
+        Returns the ID of the vending machine.
+        
+        Returns:
+            int: The ID of the vending machine.
+        """
+        return self._id
 
     def get_location(self) -> str:
         """

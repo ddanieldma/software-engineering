@@ -4,9 +4,7 @@ from dotenv import load_dotenv
 import hashlib
 import os
 import mysql.connector
-from get_products import products_dict
-# from get_products import products_list
-from get_vending_machines import vending_machines_list, products
+from get_vending_machines import vending_machines_products
 
 load_dotenv()
 
@@ -75,14 +73,15 @@ def register():
 
 @app.route('/vending/')
 def vending_machines_page():
-    return render_template('vending_machines.html', vending_machines=vending_machines_list)
+    return render_template('vending_machines.html', vending_machines=vending_machines_products.keys())
 
 @app.route('/vending/<location>')
 def products_page(location):
-    vending_machine = next((vm for vm in vending_machines_list if vm.get_location() == location), None)
+    vending_machine = next((vm for vm in vending_machines_products.keys() if vm.get_location() == location), None)
     if vending_machine:
-        machine_products = products.get(location, [])
-        return render_template('products.html', vending_machine=vending_machine, products=machine_products)
+        machine_products = vending_machines_products.get(vending_machine, [])
+        print(machine_products)
+        return render_template('products.html', vending_machine=vending_machine, machine_products=machine_products)
     return redirect(url_for('vending_machines_page'))
 
 @app.route('/')
