@@ -1,5 +1,73 @@
 from abc import ABC, abstractmethod
+from database_managment import DBConnection
 import vending as v
+
+class PersonDB():
+    """
+    Abstract class representing a person with common attributes like name, email, and password.
+
+    Attributes:
+        _name (str): The name of the person.
+        _email (str): The email of the person.
+        _password (str): The password of the person.
+
+    Methods:
+        get_role(): Abstract method to get the role of the person.
+    """
+    def __init__(self, id):
+        """
+        Initializes a Person with its id
+
+        Args:
+            id (int): The id of the person.
+        """
+        self._id = id
+
+        query = f"SELECT * FROM usuarios WHERE id = {self._id}"
+        result = DBConnection().execute_query(query, fetch_all=False)
+
+        if result is None:
+            raise ValueError(f"User ID {self._id} not found in the database.")
+        
+        _, self._name, self._email, self._password, self._role, self._is_admin, self._is_seller, self._created_at = result
+
+
+    def get_id(self):
+        """
+        Get the id of the person.
+
+        Returns:
+            int: The id of the person.
+        """
+        return self._id
+    
+    def get_name(self):
+        """
+        Get the name of the person.
+
+        Returns:
+            str: The name of the person.
+        """
+        return self._name
+
+    def is_admin(self):
+        """
+        Check if the person is an admin.
+
+        Returns:
+            bool: True if the person is an admin, False otherwise.
+        """
+        return self._role == 'Admin'
+
+    def __repr__(self):
+        """
+        String representation of the person.
+
+        Returns:
+            str: The name of the person.
+        """
+        return self._name
+
 
 # Custom exception for permission handling errors
 class PermissionError(Exception):
