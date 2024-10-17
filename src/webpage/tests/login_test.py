@@ -62,3 +62,13 @@ def test_login_user_success(client, mock_get_db_connection):
 
     print(response.data)
     assert b'Login concluido!' in response.data
+
+# Test user login with incorrect credentials
+def test_login_user_failure(client, mock_get_db_connection):
+    response = client.post('/login', data={
+        'email': 'nonexistent@example.com',
+        'password': 'wrongpassword'
+    }, follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b'Invalid email or password' in response.data
