@@ -33,6 +33,7 @@ def login():
             if user:
                 session['user_id'] = user[0]
                 flash('Login concluido!', 'success')
+                return redirect('/')
             else:
                 flash('Invalid email or password', 'danger')
         except Exception as err:
@@ -62,6 +63,7 @@ def register():
                 cursor.close()
                 conn.close()
                 flash('Successfully! registered', 'success')
+                return redirect('/login')
             except mysql.connector.IntegrityError:
                 flash('Error: Email already registered.', 'danger')
 
