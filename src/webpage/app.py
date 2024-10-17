@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import hashlib
 import os
 import mysql.connector
+from get_products import products_dict
 # from get_products import products_list
 from get_vending_machines import vending_machines_list, products
 

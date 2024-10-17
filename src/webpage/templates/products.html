@@ -7,10 +7,11 @@
 <body>
     <h1>Products in {{ vending_machine.get_location() }}</h1>
     <div class="container">
-        {% for product in products %}
-        <div class="product-item">
-            <h3>{{ product.get_name() }}</h3>
-            <p><strong>{{ product.get_price() }}</strong></p>
+        {% for product, quantity in items.items() %}
+        <div class="item">
+            <h3>{{ product }}</h3>
+            <p>Quantity: {{ quantity }}</p>
+            <p><strong>R$ {{ product.get_price() }}</strong></p>
         </div>
         {% endfor %}
     </div>
