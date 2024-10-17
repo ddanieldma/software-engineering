@@ -62,3 +62,32 @@ def test_register_user(monkeypatch):
         # Assert that the flash message indicating success is in the response
         assert b'Successfully! registered' in response.data  # Adjust the message as per your app's response
 
+
+def test_register_duplicate_email(client, monkeypatch):
+    # Mock the database connection to simulate a duplicate entry error
+    def mock_get_db_connection():
+        class MockCursor:
+            def execute(self, query, params):
+                if "INSERT" in query:
+                    raise Exception("Duplicate entry 'test@example.com' for key 'email'")
+            def close(self):
+                pass
+        class MockConnection:
+            def cursor(self):
+                return MockCursor()
+            def commit(self):
+                pass
+            def close(self):
+                pass
+        return MockConnection()
+
+    monkeypatch.setattr('db.get_db_connection', mock_get_db_connection)
+
+    response = client.post('/register', data={
+        'nome': 'Test User',
+        'email': 'test@example.com',
+        'senha': 'password123'
+    }, follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b'Error:' in response.data
