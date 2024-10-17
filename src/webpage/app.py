@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, redirect, flash, session
+from flask import Flask, render_template, request, redirect, flash, session, url_for
 from db import get_db_connection
 from dotenv import load_dotenv
 import hashlib
 import os
 import mysql.connector
-from get_products import products_list
+# from get_products import products_list
+from get_vending_machines import vending_machines_list, products
 
 load_dotenv()
 
@@ -71,9 +72,17 @@ def register():
 
     return render_template('register.html')
 
-@app.route('/products')
-def products():
-    return render_template('products.html', items=products_list)
+@app.route('/vending/')
+def vending_machines_page():
+    return render_template('vending_machines.html', vending_machines=vending_machines_list)
+
+@app.route('/vending/<location>')
+def products_page(location):
+    vending_machine = next((vm for vm in vending_machines_list if vm.get_location() == location), None)
+    if vending_machine:
+        machine_products = products.get(location, [])
+        return render_template('products.html', vending_machine=vending_machine, products=machine_products)
+    return redirect(url_for('vending_machines_page'))
 
 @app.route('/')
 def home():

@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simple Flask Webpage</title>
+    <title>Products - {{ vending_machine.get_location() }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
 </head>
 <body>
+    <h1>Products in {{ vending_machine.get_location() }}</h1>
     <div class="container">
-        {% for item in items %}
-        <div class="item">
-            <h3>{{ item.get_name() }}</h3>
-            <p><strong>{{ item.get_price() }}</strong></p>
+        {% for product in products %}
+        <div class="product-item">
+            <h3>{{ product.get_name() }}</h3>
+            <p><strong>{{ product.get_price() }}</strong></p>
         </div>
         {% endfor %}
     </div>
+    <button onclick="window.location.href='{{ url_for('vending_machines_page') }}'">Back to Vending Machines</button>
 </body>
 </html>

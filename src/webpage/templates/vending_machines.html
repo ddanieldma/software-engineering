@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vending Machines</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
+</head>
+<body>
+    <h1>Available Vending Machines</h1>
+    <div class="container">
+        {% for vm in vending_machines %}
+        <div class="item">
+            <h3>{{ vm.get_location() }}</h3>
+            <button onclick="window.location.href='{{ url_for('products_page', location=vm.get_location()) }}'">View Products</button>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
