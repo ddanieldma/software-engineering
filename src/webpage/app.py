@@ -3,6 +3,7 @@ from db import get_db_connection
 from dotenv import load_dotenv
 import hashlib
 import os
+import mysql.connector
 
 load_dotenv()
 
@@ -22,10 +23,14 @@ def register():
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("""
+            try:
+                cursor.execute("""
                 INSERT INTO usuarios (nome, email, senha_hash)
                 VALUES (%s, %s, %s)
-            """, (nome, email, senha_hash))
+                """, (nome, email, senha_hash))
+            except mysql.connector.IntegrityError:
+                flash('Error: Email already registered.', 'danger')
+
             conn.commit()
             cursor.close()
             conn.close()
