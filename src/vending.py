@@ -11,14 +11,14 @@ class Product:
         _description (str): The description of the product.
         _price (float): The price of the product.
         _category (str): The category of the product.
-        _img_url (str): The URL of the product image.
+        _img_url (str): The URL of the product image (optional).
 
     Methods:
         set_price(price): Sets the price of the product.
         get_price(): Returns the price of the product. Raises an error if the price is not set.
         get_name(): Returns the name of the product.
     """
-    def __init__(self, name, description, price, category, img_url):
+    def __init__(self, name, description, price, category, img_url=None):
         """
         Initializes the Product instance with a name.
         
@@ -98,6 +98,15 @@ class Product:
             str: The image URL of the product.
         """
         return self._img_url
+    
+    def __repr__(self):
+        """
+        When called with print(), returns the name of the product.
+
+        Returns:
+            str: The name of the product.
+        """
+        return self._name
 
 
 # Vending place superclass
@@ -247,12 +256,12 @@ class VendingMachine(VendingPlace):
         super().__init__(location)
         self._stock = defaultdict(int)
 
-    def get_stock(self, product):
+    def get_stock(self, product=None):
         """
         Gets the stock of a specific product in the vending machine.
         
         Args:
-            product (Product): The product to check stock for.
+            product (Product): The product to check stock for. If None, returns all stock.
 
         Returns:
             int: The current stock of the product.
@@ -260,6 +269,8 @@ class VendingMachine(VendingPlace):
         Raises:
             ValueError: If the product is not a valid Product instance.
         """
+        if product is None:
+            return dict(self._stock)
         self._validate_product(product)
         return self._stock[product]
     
@@ -383,8 +394,7 @@ class StudentVending(VendingMachine):
 
 if __name__ == '__main__':
     # Create a product
-    coke_product = Product('Coke')
-    coke_product.set_price(8)
+    coke_product = Product('Coke', 'A refreshing soda', 2.5, 'Drink')
     print(f"Created product: {coke_product.get_name()} priced at R${coke_product.get_price()}")
 
     # Create a vending machine
@@ -397,7 +407,7 @@ if __name__ == '__main__':
 
 
     # Create another product
-    brownie_product = Product('Brownie')
+    brownie_product = Product('Brownie', 'A delicious chocolate treat', 3.0, 'Snack')
     brownie_product.set_price(15)
     print(f"Created product: {brownie_product.get_name()} priced at R${brownie_product.get_price()}")
 
