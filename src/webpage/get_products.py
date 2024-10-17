@@ -10,12 +10,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from vending import Product
 
 # Creating produtcs.
-coke_product = Product('Coke')
-coke_product.set_price(8)
-brownie_product = Product('Brownie')
-brownie_product.set_price(5)
-coffee_product = Product('Coffee')
-coffee_product.set_price(2)
+coke_product = Product('Coke','A cold beverage',8,'beverage')
+brownie_product = Product('Brownie','A sweet treat',9.5,'Treat')
+coffee_product = Product('Coffe','A powerful elixir that can be turned into theorems for players with the special class mathematic',2.5,'Beverage')
 
 # Putting in a list.
 products_list = [
