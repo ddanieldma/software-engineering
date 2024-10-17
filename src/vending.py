@@ -347,6 +347,8 @@ class StudentVending(VendingMachine):
         
         return self._stock
 
+def get_products_from_db():
+    pass
 
 if __name__ == '__main__':
     # Create a product
