@@ -101,7 +101,7 @@ def product_detail_page(location, product_name):
             return render_template('product_detail.html', vending_machine=vending_machine, product=product)
     return redirect(url_for('vending_machines_page'))
 
-@app.route('/report-problem', methods=['GET', 'POST'])
+@app.route('/report_problem', methods=['GET', 'POST'])
 def report_problem():
     if 'user_id' not in session:
         flash('Please log in to access this page', 'danger')
