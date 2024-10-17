@@ -348,7 +348,11 @@ class StudentVending(VendingMachine):
         return self._stock
 
 def get_products_from_db():
-    return []
+    coke_product = Product('Coke')
+    coke_product.set_price(8)
+    brownie_product = Product('Brownie')
+    brownie_product.set_price(5)
+    return [coke_product, brownie_product]
 
 if __name__ == '__main__':
     # Create a product
