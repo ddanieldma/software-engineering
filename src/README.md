@@ -52,11 +52,34 @@ Em geral os dados fictícios são aleatórios, mas os seguintes logins estarão 
 
 Login de Admin
 
+Nome: 'Alice Santos', 
+
+E-mail: 'alice@example.com', 
+
+Senha: 'hashed_password_1',
+
 Login de User normal
+
+Nome: 'Carlos Silva', 
+
+E-mail: 'carlos@example.com', 
+
+Senha: 'hashed_password_3',
 
 Também teremos a seguinte entrada de vending machine
 
 Entrada de vending machine
 
-User o id dessa vending machine ná página de reporte de problemas para evitar erros do banco de dados.
+Id: 1
 
+Localização: Rua da Praia, 123 - Centro, Porto Alegre
+
+Use o id dessa vending machine na página de reporte de problemas para evitar erros do banco de dados.
+
+Após o banco de dados e tabelas terem sido criados e populados você deve executar o `app.py`
+
+```bash
+python webpage/app.py
+```
+
+E então abrir o localhost na porta 5000. A partir desse ponto a exploração da aplicação fica a critério do usuário.
