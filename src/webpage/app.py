@@ -57,13 +57,14 @@ def register():
                 INSERT INTO usuarios (nome, email, senha_hash)
                 VALUES (%s, %s, %s)
                 """, (nome, email, senha_hash))
+                conn.commit()
+                cursor.close()
+                conn.close()
+                flash('Successfully! registered', 'success')
             except mysql.connector.IntegrityError:
                 flash('Error: Email already registered.', 'danger')
 
-            conn.commit()
-            cursor.close()
-            conn.close()
-            flash('Successfully! registered', 'success')
+            
             return redirect('/register')
         except Exception as err:
             flash(f'Error: {err}', 'danger')
