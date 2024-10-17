@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Problem Reports</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
+</head>
+<body>
+    <h1>Problem Reports</h1>
+    <div class="container">
+        {% for pr in problem_reports %}
+        <div class="item">
+            <h3>{{ pr.get_type() }}</h3>
+            <p>{{ pr.get_date_reported()}}</p>
+            <p>{{ pr.get_status() }}</p>
+            <button onclick="window.location.href='{{ url_for('report_page', report_id=pr.get_id()) }}'">View Details</button>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

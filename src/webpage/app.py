@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 import hashlib
 import os
 import mysql.connector
-from get_vending_machines import vending_machines_products
+from get_complete_data import vending_machines_products, problem_reports
+from user import PersonDB
 
 load_dotenv()
 
@@ -32,6 +33,11 @@ def login():
             if user:
                 session['user_id'] = user[0]
                 flash('Login concluido!', 'success')
+                user_object = PersonDB(user[0])
+
+                if user_object.get_name() == "admin" or user_object.is_admin():
+                    return redirect('/admin')
+                
                 return redirect('/')
             else:
                 flash('Invalid email or password', 'danger')
@@ -118,17 +124,32 @@ def report_problem():
             cursor.close()
             conn.close()
             flash('Problem report submitted successfully!', 'success')
-            return redirect('/report-problem')
+            return redirect('/report_problem')
         except Exception as err:
             flash(f'Error: {err}', 'danger')
-            return redirect('/report-problem')
+            return redirect('/report_problem')
 
     return render_template('report_problem.html')
 
+@app.route('/reports/')
+def reports_page():
+    return render_template('reports.html', problem_reports=problem_reports)
+
+@app.route('/reports/<report_id>')
+def report_page(report_id):
+    report = next((r for r in problem_reports if r.get_id() == int(report_id)), None)
+    print(report)
+    if report:
+        return render_template('report.html', report=report)
+    return redirect(url_for('reports_page'))
 
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/admin')
+def admin_page():
+    return render_template('admin_page.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
