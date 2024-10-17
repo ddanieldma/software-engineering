@@ -87,12 +87,21 @@ def vending_machines_page():
 def products_page(location):
     vending_machine = next((vm for vm in vending_machines_products.keys() if vm.get_location() == location), None)
     if vending_machine:
-        machine_products = vending_machines_products.get(vending_machine, [])
-        print(machine_products)
+        machine_products = vending_machines_products.get(vending_machine, {})
         return render_template('products.html', vending_machine=vending_machine, machine_products=machine_products)
     return redirect(url_for('vending_machines_page'))
 
-@app.route('/report_problem', methods=['GET', 'POST'])
+@app.route('/product/<location>/<product_name>')
+def product_detail_page(location, product_name):
+    vending_machine = next((vm for vm in vending_machines_products.keys() if vm.get_location() == location), None)
+    if vending_machine:
+        machine_products = vending_machines_products.get(vending_machine, {})
+        product = next((p for p in machine_products.keys() if p.get_name() == product_name), None)
+        if product:
+            return render_template('product_detail.html', vending_machine=vending_machine, product=product)
+    return redirect(url_for('vending_machines_page'))
+
+@app.route('/report-problem', methods=['GET', 'POST'])
 def report_problem():
     if 'user_id' not in session:
         flash('Please log in to access this page', 'danger')
