@@ -84,6 +84,37 @@ def products_page(location):
         return render_template('products.html', vending_machine=vending_machine, machine_products=machine_products)
     return redirect(url_for('vending_machines_page'))
 
+@app.route('/report-problem', methods=['GET', 'POST'])
+def report_problem():
+    if 'user_id' not in session:
+        flash('Please log in to access this page', 'danger')
+        return redirect('/login')
+
+    if request.method == 'POST':
+        tipo_problema = request.form['tipo_problema']
+        descricao = request.form['descricao']
+        id_maquina = request.form.get('id_maquina')
+        user_id = session['user_id']
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO problemas_reportados (id_usuario, tipo_problema, descricao, id_maquina)
+                VALUES (%s, %s, %s, %s)
+            """, (user_id, tipo_problema, descricao, id_maquina))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            flash('Problem report submitted successfully!', 'success')
+            return redirect('/report-problem')
+        except Exception as err:
+            flash(f'Error: {err}', 'danger')
+            return redirect('/report-problem')
+
+    return render_template('report_problem.html')
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
