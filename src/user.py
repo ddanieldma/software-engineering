@@ -43,6 +43,15 @@ class Person(ABC):
         """
         pass
 
+    def __repr__(self):
+        """
+        String representation of the person.
+
+        Returns:
+            str: The name of the person.
+        """
+        return self._name
+
 
 # User class
 class User(Person):
@@ -151,6 +160,19 @@ class Admin(Person):
         vending_machine.add_stock(product, quantity)
 
 
+    def get_all_stock(self, vending_machine):
+        """
+        Get all the stock of a vending machine.
+
+        Args:
+            vending_machine (VendingMachine): The vending machine to get the stock from.
+
+        Returns:
+            dict: A dictionary containing the stock of each product in the vending machine.
+        """
+        return vending_machine.get_stock()
+
+
 # Seller class (inherits from User)
 class Seller(User):
     """
@@ -207,54 +229,55 @@ class Seller(User):
 
 
 if __name__ == '__main__':
-    # Create a product
-    product = v.Product('Soda')
-    product.set_price(1.50)
-    print(f"Created product: {product.get_name()} priced at R${product.get_price()}")
+    # Create products
+    coke = v.Product("Coca-Cola", "...", 6.00, "Beverage") 
+    water = v.Product('Water', '...', 3.00, 'Beverage')
+    chocolate = v.Product('Chocolate', '...', 4.50, 'Snack')
+
+    # Print product details
+    print(f"Created product: {coke} priced at R${coke.get_price()}")
+    print(f"Created product: {water} priced at R${water.get_price()}")
+    print(f"Created product: {chocolate} priced at R${chocolate.get_price()}")
+
+    # Create  users
+    admin = Admin("John", "john@email.com", "admin")
+    user = User("Alice", "alice@email.com", "1234", 1)
+    seller = Seller("Bob", "bob@email.com", "123123", 2)
 
     # Create a vending machine
     vending_machine = v.VendingMachine('University')
 
-    # Create an admin user
-    admin = Admin("John", "john@email.com", "admin")
-
-    # Create a regular user
-    user1 = User("Alice", "alice@email.com", "1234", 1)
-
-    # Create a seller user
-    seller = Seller("Bob", "bob@email.com", "123123", 2)
-
     # Admin adds stock to vending machine
-    admin.add_product_stock(vending_machine, product, 10)
-    print(f"Stock of {product.get_name()} in {vending_machine.get_location()}: {vending_machine.get_stock(product)}")
+    admin.add_product_stock(vending_machine, coke, 10)
+    admin.add_product_stock(vending_machine, water, 5)
+    admin.add_product_stock(vending_machine, chocolate, 7)
 
-    # User simulates a purchase
-    print(f"Simulated purchase of 1 {product.get_name()} from {vending_machine.get_location()}: cost R${user1.simulate_purchase(vending_machine, product, 1)}\n")
+    print(f"Stock of all products in {vending_machine.get_location()}: {admin.get_all_stock(vending_machine)}\n")
 
     # Create another product
-    product1 = v.Product('Chips')
-    product1.set_price(2.50)
-    print(f"Created product: {product1.get_name()} priced at R${product1.get_price()}")
+    brownie = v.Product('Brownie', '...', 3.00, 'Snack')
+    print(f"Created product: {brownie} priced at R${brownie.get_price()}")
 
-    # Create a student vending machine
+    # Create a student vending machine and set the product to be sold
     student_vending = v.StudentVending('Student Center', 2)
-    student_vending.set_product(product1)
+    student_vending.set_product(brownie)
 
     # Seller adds stock to their own student vending machine
-    seller.add_product_stock(student_vending, product1, 5)
-    print(f"Stock of {product1.get_name()} in {student_vending.get_location()}: {student_vending.get_stock(product1)}")
+    seller.add_product_stock(student_vending, brownie, 5)
+    print(f"Stock of {brownie.get_name()} in {student_vending.get_location()}: {student_vending.get_stock(brownie)}\n")
 
-    # User simulates purchase from student vending machine
-    print(f"Purchase from {student_vending.get_location()} of 2 {product1.get_name()}: cost R${user1.simulate_purchase(student_vending, product1, 2)}\n")
+    # User simulates purchase from vending machine and student vending 
+    print(f"Simulated purchase of 1 {coke.get_name()} from {vending_machine.get_location()}: cost R${user.simulate_purchase(vending_machine, coke, 1)}")
+    print(f"Purchase from {student_vending.get_location()} of 2 {brownie.get_name()}: cost R${user.simulate_purchase(student_vending, brownie, 2)}\n")
 
     # Try to add a product not sold by the student vending
     try:
-        seller.add_product_stock(student_vending, product, 5)
+        seller.add_product_stock(student_vending, coke, 5)
     except Exception as e:
         print(f"Error: {e}")
 
     # Try to add stock to a regular vending machine (not allowed for seller)
     try:
-        seller.add_product_stock(vending_machine, product, 5)
+        seller.add_product_stock(vending_machine, brownie, 5)
     except Exception as e:
         print(f"Error: {e}")

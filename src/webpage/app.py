@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import hashlib
 import os
 import mysql.connector
+from get_products import products_list
 
 load_dotenv()
 
@@ -68,6 +69,10 @@ def register():
             flash(f'Error: {err}', 'danger')
 
     return render_template('register.html')
+
+@app.route('/products')
+def products():
+    return render_template('products.html', items=products_list)
 
 @app.route('/')
 def home():
