@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ product.get_name() }} - Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
+</head>
+<body>
+    <h1>{{ product.get_name() }}</h1>
+    <div class="product-detail-container">
+        <p><strong>Price: R$ {{ product.get_price() }}</strong></p>
+        <p>{{ product.get_description() }}</p>
+    </div>
+    <button onclick="window.location.href='{{ url_for('products_page', location=vending_machine.get_location()) }}'">Back to Products</button>
+</body>
+</html>

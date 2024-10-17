@@ -10,7 +10,11 @@
     <div class="container">
         {% for product, quantity in machine_products.items() %}
         <div class="product-item">
-            <h3>{{ product }}</h3>
+            <h3>
+                <a href="{{ url_for('product_detail_page', location=vending_machine.get_location(), product_name=product.get_name()) }}">
+                    {{ product.get_name() }}
+                </a>
+            </h3>
             <p>Quantity: {{ quantity }}</p>
             <p><strong>R$ {{ product.get_price() }}</strong></p>
         </div>
