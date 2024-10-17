@@ -74,6 +74,16 @@ CREATE TABLE IF NOT EXISTS problemas_reportados (
 );
 """)
 
+# Criar tabela de avaliações
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS avaliacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    rating DECIMAL(2, 1) NOT NULL CHECK (rating >= 0 AND rating <= 5),  # Valores de 0.0 a 5.0
+    id_maquina INT NOT NULL,
+    FOREIGN KEY (id_maquina) REFERENCES vending_machines(id)
+);
+""")
+
 # Confirmar as mudanças no banco de dados
 conexao.commit()
 
