@@ -1,110 +1,210 @@
+import webpage.db as db
 from abc import ABC, abstractmethod
 from collections import defaultdict
 
-# Product class
+class DBConnection:
+    """
+    Handles connection and interaction with the database.
+
+    Methods:
+        get_connection(): Establishes and returns a connection to the database.
+        close_connection(): Closes the active database connection.
+        execute_query(query, params=None, fetch_all=False): Executes an SQL query on the database, with optional parameters.
+        get_all_vending_machines(): Retrieves all available vending machines from the database.
+    """
+    def __init__(self):
+        """Initializes the DBConnection instance."""
+        self._connection = None
+
+    def get_connection(self):
+        """
+        Establishes a connection to the database using the predefined configuration.
+        
+        Returns:
+            mysql.connector.connection.MySQLConnection: The active database connection.
+        """
+        self._connection = db.get_db_connection()
+    
+    def close_connection(self):
+        """Closes the active database connection."""
+        self._connection.close()
+
+    def execute_query(self, query, params=None, fetch_all=False):
+        """
+        Executes an SQL query on the database, with optional parameters.
+
+        Args:
+            query (str): The SQL query to be executed.
+            params (tuple, optional): A tuple of parameters to be passed to the SQL query.
+            fetch_all (bool, optional): If True, fetches all results; otherwise fetches only the first result. Defaults to False.
+
+        Returns:
+            list: A list of the query results. If fetch_all is False, returns only the first result.
+        """
+        self.get_connection()
+        cursor = self._connection.cursor()
+
+        cursor.execute(query, params)
+        
+        result = cursor.fetchall() if fetch_all else cursor.fetchone()
+        
+        self.close_connection()
+        return result
+    
+    def get_all_vending_machines(self):
+        """
+        Retrieves all vending machines available in the database.
+        
+        Returns:
+            list: A list of VendingMachine instances created from the data in the database.
+        """
+        query = "SELECT id FROM vending_machines"
+        result = self.execute_query(query, fetch_all=True)
+
+        return [VendingMachine(id[0]) for id in result]
+
+
 class Product:
     """
-    Represents a product with a name and price.
+    Represents a product available in a vending machine.
 
     Attributes:
         _name (str): The name of the product.
-        _description (str): The description of the product.
+        _id_vending_machine (int): The ID of the vending machine containing the product.
+        _description (str): The product's description.
         _price (float): The price of the product.
         _category (str): The category of the product.
-        _img_url (str): The URL of the product image (optional).
+        _img_url (str): The URL of the product's image (optional).
 
     Methods:
+        load_from_db(): Loads the product details from the database.
+        get_description(): Returns the description of the product.
         set_price(price): Sets the price of the product.
-        get_price(): Returns the price of the product. Raises an error if the price is not set.
+        get_price(): Returns the price of the product.
         get_name(): Returns the name of the product.
+        get_category(): Returns the product's category.
+        get_img_url(): Returns the product's image URL.
     """
-    def __init__(self, name, description, price, category, img_url=None):
+    
+    def __init__(self, name, id_vending_machine):
         """
-        Initializes the Product instance with a name.
-        
+        Initializes the Product instance.
+
         Args:
             name (str): The name of the product.
+            id_vending_machine (int): The ID of the vending machine containing the product.
         """
         self._name = name
-        self._description = description
-        self._price = price
-        self._category = category
-        self._img_url = img_url
+        self._id_vending_machine = id_vending_machine
+        self._description = None
+        self._price = None
+        self._category = None
+        self._img_url = None
+
+    def load_from_db(self):
+        """
+        Loads product details from the database.
+
+        Raises:
+            ValueError: If the product is not found in the vending machine.
+        """
+        query = """
+        SELECT descricao, preco, categoria, imagem_url FROM produtos
+        WHERE nome = %s AND id_vending_machine = %s
+        """
+        result = DBConnection().execute_query(query, (self._name, self._id_vending_machine))
+
+        if result:
+            self._description, self._price, self._category, self._img_url = result
+        else:
+            raise ValueError(f"Product '{self._name}' not found in vending machine {self._id_vending_machine}.")
 
     def get_description(self):
         """
-        Gets the description of the product.
-        
+        Retrieves the product's description.
+
         Returns:
-            str: The description of the product.
+            str: The product description.
         """
-        return self._description
+        if self._description is None:
+            self.load_from_db()
+
+        return self._description    
 
     def set_price(self, price):
         """
-        Sets the price of the product.
-        
+        Updates the price of the product in the database.
+
         Args:
-            price (float or int): The price to set. Must be positive.
+            price (float): The new price to set.
 
         Raises:
-            ValueError: If the price is not a number or is non-positive.
+            ValueError: If the price is not a positive number.
         """
         if not isinstance(price, (int, float)):
             raise ValueError('Price must be a number')
         elif price <= 0:
             raise ValueError('Price must be positive')
-        
-        self._price = price
+
+        query = """
+        UPDATE produtos SET preco = %s
+        WHERE nome = %s AND id_vending_machine = %s
+        """
+        DBConnection().execute_query(query, (price, self._name, self._id_vending_machine))
 
     def get_price(self):
         """
-        Gets the price of the product.
-        
+        Retrieves the current price of the product.
+
         Returns:
-            float: The price of the product.
+            float: The product's price.
 
         Raises:
-            ValueError: If the price has not been set.
+            ValueError: If the price has not been set in the database.
         """
         if self._price is None:
-            raise ValueError('Price is not set')
-        
+            self.load_from_db()
+
         return self._price
-    
+
     def get_name(self):
         """
-        Gets the name of the product.
-        
-        Returns:
-            str: The name of the product.
-        """
-        return self._name
-    
-    def get_category(self):
-        """
-        Gets the category of the product.
-        
-        Returns:
-            str: The category of the product.
-        """
-        return self._category
-    
-    def get_img_url(self):
-        """
-        Gets the image URL of the product.
-        
-        Returns:
-            str: The image URL of the product.
-        """
-        return self._img_url
-    
-    def __repr__(self):
-        """
-        When called with print(), returns the name of the product.
+        Retrieves the name of the product.
 
         Returns:
-            str: The name of the product.
+            str: The product name.
+        """
+        return self._name
+
+    def get_category(self):
+        """
+        Retrieves the category of the product.
+
+        Returns:
+            str: The category name.
+        """
+        if self._category is None:
+            self.load_from_db()
+
+        return self._category
+
+    def get_img_url(self):
+        """
+        Retrieves the URL of the product's image.
+
+        Returns:
+            str: The image URL.
+        """
+        if self._img_url is None:
+            self.load_from_db()
+        return self._img_url
+
+    def __repr__(self):
+        """
+        Provides a string representation of the product.
+
+        Returns:
+            str: The product's name and vending machine ID.
         """
         return self._name
 
@@ -232,63 +332,165 @@ class VendingPlace(ABC):
         elif quantity < 0:
             raise ValueError('Quantity must be non-negative')
 
-# Vending machine class
-class VendingMachine(VendingPlace):
+class VendingMachine:
     """
     Represents a vending machine at a specific location.
 
-    Inherits from VendingPlace.
-
     Attributes:
-        _stock (defaultdict): A dictionary holding the stock of products.
-
+        _location (str or None): The location of the vending machine. 
+        _stock (defaultdict): A cache of the product stock for this vending machine.
+        _id (int): The ID of the vending machine.
+    
     Methods:
-        get_stock(product): Returns the stock of a product.
-        set_stock(product, quantity): Sets the stock of a product.
+        get_location: Returns the location of the vending machine.
+        get_stock: Returns the stock of a specific product or all stock.
+        set_stock: Sets the stock of a specific product and updates the database.
     """
-    def __init__(self, location):
+    def __init__(self, id: int):
         """
-        Initializes the VendingMachine instance with a location and an empty stock.
+        Initializes the VendingMachine instance with the machine's ID and an empty stock cache.
         
         Args:
-            location (str): The location of the vending machine.
+            id (int): The ID of the vending machine in the database.
         """
-        super().__init__(location)
-        self._stock = defaultdict(int)
+        self._location: str | None = None
+        self._id: int = id
+        self._stock: defaultdict = defaultdict(int)  # Cache for product stock
 
-    def get_stock(self, product=None):
+    def get_id(self) -> int:
         """
-        Gets the stock of a specific product in the vending machine.
+        Returns the ID of the vending machine.
         
-        Args:
-            product (Product): The product to check stock for. If None, returns all stock.
-
         Returns:
-            int: The current stock of the product.
+            int: The ID of the vending machine.
+        """
+        return self._id
 
+    def get_location(self) -> str:
+        """
+        Retrieves the location of the vending machine from the database.
+        
+        Returns:
+            str: The location of the vending machine.
+        
         Raises:
-            ValueError: If the product is not a valid Product instance.
+            ValueError: If the vending machine is not found in the database.
+        """
+        if self._location is None:
+            # Query to fetch the location of the vending machine
+            query = "SELECT localizacao FROM vending_machines WHERE id = %s"
+            result = DBConnection().execute_query(query, (self._id,))
+
+            if result:
+                self._location = result[0]
+            else:
+                raise ValueError(f"Vending machine with ID {self._id} not found.")
+        
+        return self._location
+
+    def get_stock(self, product: str | None = None) -> dict | int:
+        """
+        Retrieves the stock for a specific product or all products in the vending machine.
+        
+        Args:
+            product (str or None): The name of the product to check stock for. If None, returns all stock.
+        
+        Returns:
+            dict or int: A dictionary with all products and their stock if product is None, or the stock of a specific product.
+        
+        Raises:
+            ValueError: If the specified product is not found in the vending machine.
         """
         if product is None:
-            return dict(self._stock)
-        self._validate_product(product)
-        return self._stock[product]
-    
-    def set_stock(self, product, quantity):
+            return self._get_all_stock()
+        else:
+            return self._get_stock_for_product(product)
+
+    def _get_all_stock(self) -> dict:
         """
-        Sets the stock of a specific product in the vending machine.
+        Fetches and returns the stock of all products in the vending machine from the database.
+        
+        Returns:
+            dict: A dictionary with products as keys and their stock as values.
+        """
+        query = """
+        SELECT nome, estoque FROM produtos WHERE id_vending_machine = %s
+        """
+        result = DBConnection().execute_query(query, (self._id,), fetch_all=True)
+
+        # Update local stock cache
+        self._stock = defaultdict(int, {Product(name, self._id): stock for name, stock in result})
+
+        return dict(self._stock)
+    
+    def _get_stock_for_product(self, product: str) -> int:
+        """
+        Fetches and returns the stock of a specific product from the database.
         
         Args:
-            product (Product): The product to set stock for.
-            quantity (int): The quantity to set.
-
+            product (str): The name of the product to fetch stock for.
+        
+        Returns:
+            int: The stock quantity of the specified product.
+        
         Raises:
-            ValueError: If the product is not valid or if the quantity is invalid.
+            ValueError: If the product is not found in this vending machine.
         """
-        self._validate_product(product)
+        query = """
+        SELECT estoque FROM produtos WHERE id_vending_machine = %s AND nome = %s
+        """
+        result = DBConnection().execute_query(query, (self._id, product))
+
+        if result:
+            self._stock[product] = result[0]
+            return self._stock[product]
+        else:
+            raise ValueError(f"Product '{product}' not found in this vending machine.")
+
+    def set_stock(self, product: str, quantity: int) -> None:
+        """
+        Sets the stock for a specific product and updates the database.
+        
+        Args:
+            product (str): The name of the product to update.
+            quantity (int): The quantity to set for the product.
+        
+        Raises:
+            ValueError: If the product is not found in the database or if the quantity is invalid.
+        """
         self._validate_quantity(quantity)
 
+        # Update the stock in the database
+        query = "UPDATE produtos SET estoque = %s WHERE id_vending_machine = %s AND nome = %s"
+        result = DBConnection().execute_query(query, (quantity, self._id, product))
+
+        if result.rowcount == 0:
+            raise ValueError(f"Product '{product}' not found in this vending machine.")
+        
+        # Update the local stock cache
         self._stock[product] = quantity
+
+    def _validate_quantity(self, quantity: int) -> None:
+        """
+        Validates that the provided quantity is a non-negative integer.
+        
+        Args:
+            quantity (int): The quantity to validate.
+        
+        Raises:
+            ValueError: If the quantity is not a non-negative integer.
+        """
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity must be a non-negative integer.")
+
+    def __repr__(self) -> str:
+        """
+        Returns a string representation of the vending machine, including its ID and location.
+        
+        Returns:
+            str: A string describing the vending machine.
+        """
+        return f"Vending Machine {self._id} at {self.get_location()}"
 
 
 # Student vending class
@@ -393,42 +595,20 @@ class StudentVending(VendingMachine):
 
 
 if __name__ == '__main__':
-    # Create a product
-    coke_product = Product('Coke', 'A refreshing soda', 2.5, 'Drink')
-    print(f"Created product: {coke_product.get_name()} priced at R${coke_product.get_price()}")
+    # Create Vending Machine instance
+    vending_machine = VendingMachine(1)
+    print(vending_machine.get_location())
 
-    # Create a vending machine
-    vending_machine = VendingMachine('Library')
-    vending_machine.add_stock(coke_product, 5)
-    print(f"Stock of {coke_product.get_name()} in {vending_machine.get_location()}: {vending_machine.get_stock(coke_product)}")
+    # Get stock of all products
+    print(vending_machine.get_stock())
 
-    # Purchase from vending machine
-    print(f"Simulated purchase of 1 {coke_product.get_name()} from {vending_machine.get_location()}: cost R${vending_machine.simulate_purchase(coke_product, 1)}\n")
+    # Get stock of a specific product
+    print(vending_machine.get_stock('change'))
 
+    product = Product('change', 1)
 
-    # Create another product
-    brownie_product = Product('Brownie', 'A delicious chocolate treat', 3.0, 'Snack')
-    brownie_product.set_price(15)
-    print(f"Created product: {brownie_product.get_name()} priced at R${brownie_product.get_price()}")
+    print("Product price:", product.get_price())
 
-    # Create a student vending machine
-    student_vending = StudentVending('Student Center', '1234')
-    student_vending.set_product(brownie_product)
-    student_vending.add_stock(brownie_product, 5)
-    print(f"Stock of {brownie_product.get_name()} in {student_vending.get_location()}: {student_vending.get_stock(brownie_product)}")
-
-    # Purchase from student vending machine
-    print(f"Purchase from {student_vending.get_location()} of 2 {brownie_product.get_name()}: cost R${student_vending.simulate_purchase(brownie_product, 2)}\n")
-
-
-    # Try to purchase more than available
-    try:
-        print(f"Purchase from {student_vending.get_location()} of 10 {brownie_product.get_name()}: cost R${student_vending.simulate_purchase(brownie_product, 10)}")
-    except Exception as e:
-        print(f"Error: {e}")
-
-    # Try to purchase coke from student vending machine
-    try:
-        print(f"Purchase from {student_vending.get_location()} of 2 {coke_product.get_name()}: cost R${student_vending.simulate_purchase(coke_product, 2)}")
-    except Exception as e:
-        print(f"Error: {e}")
+    # Set price of the product
+    product.set_price(2)
+    print("Product price after setting:", product.get_price())

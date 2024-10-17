@@ -9,7 +9,8 @@
     <div class="container">
         {% for vm in vending_machines %}
         <div class="item">
-            <h3>{{ vm.get_location() }}</h3>
+            <h3>Vending Machine {{ vm.get_id() }}</h3>
+            <p>{{ vm.get_location() }}</p>
             <button onclick="window.location.href='{{ url_for('products_page', location=vm.get_location()) }}'">View Products</button>
         </div>
         {% endfor %}
