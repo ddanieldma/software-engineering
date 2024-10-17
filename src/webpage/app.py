@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, session
 from db import get_db_connection
 from dotenv import load_dotenv
 import hashlib
@@ -7,8 +7,13 @@ import mysql.connector
 
 load_dotenv()
 
+
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
