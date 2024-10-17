@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import hashlib
 import os
 import mysql.connector
-from get_vending_machines import vending_machines_products
+from get_complete_data import vending_machines_products, problem_reports
 
 load_dotenv()
 
@@ -114,6 +114,17 @@ def report_problem():
 
     return render_template('report_problem.html')
 
+@app.route('/reports/')
+def reports_page():
+    return render_template('reports.html', problem_reports=problem_reports)
+
+@app.route('/reports/<report_id>')
+def report_page(report_id):
+    report = next((r for r in problem_reports if r.get_id() == int(report_id)), None)
+    print(report)
+    if report:
+        return render_template('report.html', report=report)
+    return redirect(url_for('reports_page'))
 
 @app.route('/')
 def home():
