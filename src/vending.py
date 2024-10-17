@@ -8,14 +8,17 @@ class Product:
 
     Attributes:
         _name (str): The name of the product.
-        _price (float): The price of the product, initially set to None.
+        _description (str): The description of the product.
+        _price (float): The price of the product.
+        _category (str): The category of the product.
+        _img_url (str): The URL of the product image.
 
     Methods:
         set_price(price): Sets the price of the product.
         get_price(): Returns the price of the product. Raises an error if the price is not set.
         get_name(): Returns the name of the product.
     """
-    def __init__(self, name):
+    def __init__(self, name, description, price, category, img_url):
         """
         Initializes the Product instance with a name.
         
@@ -23,7 +26,19 @@ class Product:
             name (str): The name of the product.
         """
         self._name = name
-        self._price = None
+        self._description = description
+        self._price = price
+        self._category = category
+        self._img_url = img_url
+
+    def get_description(self):
+        """
+        Gets the description of the product.
+        
+        Returns:
+            str: The description of the product.
+        """
+        return self._description
 
     def set_price(self, price):
         """
@@ -65,6 +80,24 @@ class Product:
             str: The name of the product.
         """
         return self._name
+    
+    def get_category(self):
+        """
+        Gets the category of the product.
+        
+        Returns:
+            str: The category of the product.
+        """
+        return self._category
+    
+    def get_img_url(self):
+        """
+        Gets the image URL of the product.
+        
+        Returns:
+            str: The image URL of the product.
+        """
+        return self._img_url
 
 
 # Vending place superclass
