@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash, session, url_for
 from db import get_db_connection
 from dotenv import load_dotenv
 import hashlib
@@ -9,8 +9,36 @@ from get_vending_machines import vending_machines_list, products
 
 load_dotenv()
 
+
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT * FROM usuarios WHERE email = %s AND senha_hash = %s
+            """, (email, password_hash))
+            user = cursor.fetchone()
+            cursor.close()
+            conn.close()
+
+            if user:
+                session['user_id'] = user[0]
+                flash('Login concluido!', 'success')
+            else:
+                flash('Invalid email or password', 'danger')
+        except Exception as err:
+            flash(f'Error: {err}', 'danger')
+
+    return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -30,13 +58,14 @@ def register():
                 INSERT INTO usuarios (nome, email, senha_hash)
                 VALUES (%s, %s, %s)
                 """, (nome, email, senha_hash))
+                conn.commit()
+                cursor.close()
+                conn.close()
+                flash('Successfully! registered', 'success')
             except mysql.connector.IntegrityError:
                 flash('Error: Email already registered.', 'danger')
 
-            conn.commit()
-            cursor.close()
-            conn.close()
-            flash('Successfully! registered', 'success')
+            
             return redirect('/register')
         except Exception as err:
             flash(f'Error: {err}', 'danger')
