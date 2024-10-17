@@ -241,60 +241,6 @@ class Admin(Person):
         return vending_machine.get_stock()
 
 
-# Seller class (inherits from User)
-class Seller(User):
-    """
-    Class representing a seller in the vending system, a specialized type of user.
-    Sellers are responsible for managing stock in their own vending machine.
-
-    Inherits from User.
-
-    Methods:
-        get_role(): Get the role of the seller.
-        add_product_stock(student_vending, product, quantity): Add stock to the seller's vending machine.
-    """
-    def __init__(self, name, email, password, user_id):
-        """
-        Initializes a Seller with the User attributes.
-
-        Args:
-            name (str): The name of the seller.
-            email (str): The email of the seller.
-            password (str): The password of the seller.
-            user_id (int): The unique identifier of the seller.
-        """
-        super().__init__(name, email, password, user_id)
-
-    def get_role(self):
-        """
-        Get the role of the seller.
-
-        Returns:
-            str: Returns 'seller' as the role.
-        """
-        return 'seller'
-    
-    def add_product_stock(self, student_vending, product, quantity):
-        """
-        Adds product stock to the seller's own vending machine.
-
-        Args:
-            student_vending (StudentVending): The student vending machine where stock is being added.
-            product (Product): The product being stocked.
-            quantity (int): The quantity of the product to be added.
-
-        Raises:
-            ValueError: If the vending machine is not a valid instance of StudentVending.
-            PermissionError: If the seller is not authorized to add stock to the vending machine.
-        """
-        if not isinstance(student_vending, v.StudentVending):
-            raise ValueError("The vending machine must be a StudentVending instance")
-        
-        if student_vending.get_student_id() != self._user_id:
-            raise PermissionError("Seller is not authorized to add stock to this vending machine")
-
-        student_vending.add_stock(product, quantity)
-
 
 if __name__ == '__main__':
     # Create products

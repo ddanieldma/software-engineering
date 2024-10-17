@@ -1,18 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br"></html>
 <head>
     <title>Problem Report - {{ report.get_id() }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
 </head>
 <body>
-    <h1>Problem Report {{ report.get_id() }} - {{ report.get_type() }}</h1>
+    <header>
+        <div class="top-bar">
+            <h1>COFFEMAP</h1>
+            <div class="header-options">
+                <div class="language-buttons">
+                    <button class="active">PT</button>
+                    <button>EN</button>
+                    <button>ES</button>
+                </div>
+    
+            </div>
+        </div>
+        <nav class="navbar">
+
+        </nav>
+    </header>
+    <h1>Problema reportado {{ report.get_id() }} - {{ report.get_type() }}</h1>
     <p>Username: {{ report.get_user_id() }} - Vending Machine: {{ report.get_vending_machine_id() }}</p>
     <div class="container">
-        <p>Date Reported: {{ report.get_date_reported() }}</p>
-        <p>Date Resolved: {{ report.get_date_solved() }}</p>
+        <p>Data reportada: {{ report.get_date_reported() }}</p>
+        <p>Data resolvida: {{ report.get_date_solved() }}</p>
         <p>Status: {{ report.get_status() }}</p>
-        <p>Details: {{ report.get_description() }}</p>
+        <p>Detalhes: {{ report.get_description() }}</p>
     </div>
-    <button onclick="window.location.href='{{ url_for('reports_page') }}'">Back to Problem Reports</button>
+    <button onclick="window.location.href='{{ url_for('reports_page') }}'">Voltar para </button>
 </body>
+
+<footer>
+    <p>&copy;coffemap</p> <!-- Rodapé da página -->
+</footer>
+
 </html>
