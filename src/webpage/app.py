@@ -75,6 +75,14 @@ def register():
 def products():
     return render_template('products.html', items=products_list)
 
+@app.route('/report-problem', methods=['GET', 'POST'])
+def report_problem():
+    if 'user_id' not in session:
+        flash('Please log in to access this page', 'danger')
+        return redirect('/login')
+
+    return render_template('report_problem.html')
+
 @app.route('/')
 def home():
     return render_template('index.html')
