@@ -2,7 +2,7 @@
 <html lang="pt-br"></html>
 <head>
     <title>Problem Reports</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
@@ -19,18 +19,18 @@
         </div>
         <nav class="navbar">
             <ul> <!-- Menu de navegação -->
-                <li><a href="admin_page">Voltar</a></li>
+                <li><a onclick="window.location.href=`{{ url_for('admin_page') }}`">Voltar</a></li>
             </ul>
         </nav>
     </header>
     <h1>Problemas reportados</h1>
-    <div class="container">
+    <div class="container2">
         {% for pr in problem_reports %}
         <div class="item">
             <h3>{{ pr.get_type() }}</h3>
             <p>{{ pr.get_date_reported()}}</p>
             <p>{{ pr.get_status() }}</p>
-            <button onclick="window.location.href='{{ url_for('report_page', report_id=pr.get_id()) }}'">Ver detalhes</button>
+            <button onclick="window.location.href=`{{ url_for('report_page', report_id=pr.get_id()) }}`">Ver detalhes</button>
         </div>
         {% endfor %}
     </div>

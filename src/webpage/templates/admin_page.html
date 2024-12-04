@@ -2,7 +2,7 @@
 <html lang="pt-br"></html>
 <head>
     <title>ADMIN</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
@@ -22,18 +22,18 @@
         </nav>
     </header>
     <h1>USER Pages</h1>
-    <div class="container">
+    <div class="container2">
         <div class="item">
-            <button onclick="window.location.href='{{ url_for('report_problem') }}'">Reportar um problema</button>
+            <button onclick="window.location.href=`{{ url_for('report_problem') }}`">Reportar um problema</button>
         </div>
     </div>
     <h1>ADMIN Pages</h1>
-    <div class="container">
+    <div class="container2">
         <div class="item">
-            <button onclick="window.location.href='{{ url_for('vending_machines_page') }}'">Ver estoques de máquinas de vendas</button>
+            <button onclick="window.location.href=`{{ url_for('vending_machines_page') }}`">Ver estoques de máquinas de vendas</button>
         </div>
         <div class="item">
-            <button onclick="window.location.href='{{ url_for('reports_page') }}'">Ver todos</button>
+            <button onclick="window.location.href=`{{ url_for('reports_page') }}`">Ver todos</button>
         </div>
     </div>
 </body>

@@ -2,7 +2,7 @@
 <html lang="pt-br"></html>
 <head>
     <title>Vending Machines</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
@@ -29,7 +29,7 @@
         <div class="item">
             <h3>Máquina de venda {{ vm.get_id() }}</h3>
             <p>{{ vm.get_location() }}</p>
-            <button onclick="window.location.href='{{ url_for('products_page', location=vm.get_location()) }}'">Ver produtos</button>
+            <button onclick="window.location.href=`{{ url_for('products_page', location=vm.get_location()) }}`">Ver produtos</button>
         </div>
         {% endfor %}
     </div>
