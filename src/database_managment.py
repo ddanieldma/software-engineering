@@ -69,6 +69,7 @@ class DBConnection:
         result = cursor.fetchall() if fetch_all else cursor.fetchone()
 
         # Explicitly close the cursor but keep the connection open for further use
+        connection.commit()
         cursor.close()
         return result
     

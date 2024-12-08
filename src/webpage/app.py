@@ -7,6 +7,8 @@ import mysql.connector
 from get_complete_data import vending_machines_products, problem_reports
 from user import PersonDB
 from functools import wraps
+from database_managment import DBConnection
+from flask import jsonify
 
 load_dotenv()
 
@@ -107,7 +109,22 @@ def register():
 @app.route('/vending/')
 @login_required
 def vending_machines_page():
-    return render_template('vending_machines.html', vending_machines=vending_machines_products.keys())
+    # get favorite vending machines
+    db = DBConnection()
+
+    query = """
+        SELECT id_maquina
+        FROM favoritos
+        WHERE id_usuario = %s
+    """
+
+    user_id = session.get('user_id')
+
+    favorites = db.execute_query(query, (user_id,), True)
+    print(favorites)
+    favorites = [favorite[0] for favorite in favorites]
+
+    return render_template('vending_machines.html', vending_machines=vending_machines_products.keys(), favorites=favorites)
 
 @app.route('/vending/<location>')
 @login_required
@@ -201,6 +218,34 @@ def logout():
     session.clear()
     flash('Logged out successfully.', 'success')
     return redirect('/')
+
+@app.route('/save_favorites', methods=['POST'])
+def save_favorites():
+    try:
+        data = request.get_json()
+        favorites = data.get('favorites', [])
+
+        if not favorites:
+            return jsonify({"message": "Nenhuma máquina selecionada como favorita."}), 400
+        
+        # Cria a conexão com o banco de dados
+        db = DBConnection()
+
+        # Atualiza as máquinas favoritas no banco de dados
+        query = """
+            INSERT INTO favoritos (id_usuario, id_maquina)
+            VALUES (%s, %s)
+            ON DUPLICATE KEY UPDATE id_usuario = VALUES(id_usuario), id_maquina = VALUES(id_maquina)
+        """
+
+        user_id = session.get('user_id')
+
+        for machine_id in favorites:
+            db.execute_query(query, (user_id, machine_id))
+        return jsonify({"message": "Favoritos salvos com sucesso."}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':

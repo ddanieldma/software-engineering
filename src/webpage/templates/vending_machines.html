@@ -1,8 +1,39 @@
 <!DOCTYPE html>
-<html lang="pt-br"></html>
+<html lang="pt-br">
 <head>
     <title>Vending Machines</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
+    <script> 
+        // Função para gerenciar máquinas favoritas
+        function toggleFavorite(machineId) {
+            const checkbox = document.getElementById(`favorite-${machineId}`);
+            if (checkbox.checked) {
+                favorites.add(machineId);
+            } else {
+                favorites.delete(machineId);
+            }
+        }
+
+        // Enviar lista de favoritos para o backend
+        function submitFavorites() {
+            fetch("{{ url_for('save_favorites') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ favorites: Array.from(favorites) } ),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Favoritos salvos com sucesso!");
+                } else {
+                    alert("Erro ao salvar favoritos.");
+                }
+            });
+        }
+
+        const favorites = new Set();
+    </script>
 </head>
 <body>
     <header>
@@ -14,11 +45,10 @@
                     <button>EN</button>
                     <button>ES</button>
                 </div>
-    
             </div>
         </div>
         <nav class="navbar">
-            <ul> <!-- Menu de navegação -->
+            <ul>
                 <li><a href="admin_page">Voltar</a></li>
             </ul>
         </nav>
@@ -29,12 +59,19 @@
         <div class="item">
             <h3>Máquina de venda {{ vm.get_id() }}</h3>
             <p>{{ vm.get_location() }}</p>
-            <button onclick="window.location.href=`{{ url_for('products_page', location=vm.get_location()) }}`">Ver produtos</button>
+            <label>
+                <input type="checkbox" id="favorite-{{ vm.get_id() }}" 
+                       onchange="toggleFavorite('{{ vm.get_id() }}')" 
+                       {% if vm.get_id() in favorites %} checked {% endif %}>
+                Favoritar
+            </label>
+            <button onclick="window.location.href='{{ url_for('products_page', location=vm.get_location()) }}'">Ver produtos</button>
         </div>
         {% endfor %}
     </div>
     <footer>
-        <p>&copy;coffemap</p> <!-- Rodapé da página -->
+        <p>&copy;coffemap</p>
     </footer>
+    <button onclick="submitFavorites()">Salvar Favoritos</button>
 </body>
 </html>

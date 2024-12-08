@@ -84,6 +84,17 @@ CREATE TABLE IF NOT EXISTS avaliacoes (
 );
 """)
 
+# Criar tabela de vending machines favoritas dos usuários
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS favoritos (
+    id_usuario INT NOT NULL,
+    id_maquina INT NOT NULL,
+    PRIMARY KEY (id_usuario, id_maquina),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
+    FOREIGN KEY (id_maquina) REFERENCES vending_machines(id)
+);
+""")
+
 # Confirmar as mudanças no banco de dados
 conexao.commit()
 
