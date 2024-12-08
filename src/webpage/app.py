@@ -3,9 +3,7 @@ from db import get_db_connection
 from dotenv import load_dotenv
 import hashlib
 import os
-import mysql.connector
 from get_complete_data import vending_machines_products, problem_reports
-from user import PersonDB
 from functools import wraps
 from database_managment import DBConnection
 from flask import jsonify
@@ -43,14 +41,12 @@ def login():
         password_hash = hashlib.sha256(password.encode()).hexdigest()
 
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT id, is_admin FROM usuarios WHERE email = %s AND senha_hash = %s
-            """, (email, password_hash))
-            user = cursor.fetchone()
-            cursor.close()
-            conn.close()
+            query = """
+                SELECT id, is_admin FROM usuarios WHERE email = %s AND senha_hash = %s"""
+            params = (email, password_hash)
+
+            db = DBConnection()
+            user = db.execute_query(query, params, fetch_all=False)
 
             if user:
                 session['user_id'] = user[0]
@@ -85,22 +81,16 @@ def register():
         is_admin = 1 if admin_password == SPECIAL_ADMIN_PASSWORD else 0
 
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            try:
-                cursor.execute("""
+            query = """
                 INSERT INTO usuarios (nome, email, senha_hash, is_admin)
                 VALUES (%s, %s, %s, %s)
-                """, (nome, email, senha_hash, is_admin))
-                conn.commit()
-                cursor.close()
-                conn.close()
-                flash('Successfully registered!', 'success')
-                return redirect('/login')
-            except mysql.connector.IntegrityError:
-                flash('Error: Email already registered.', 'danger')
+            """
+            params = (nome, email, senha_hash, is_admin)
 
-            return redirect('/register')
+            db = DBConnection()
+            db.execute_query(query, params)
+            flash('Successfully registered!', 'success')
+            return redirect('/login')
         except Exception as err:
             flash(f'Error: {err}', 'danger')
 
