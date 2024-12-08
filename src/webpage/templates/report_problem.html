@@ -1,33 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Problem</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <header>
-    <div class="top-bar">
-        <h1>COFFEMAP</h1>
-        <div class="header-options">
-            <div class="language-buttons">
-                <button class="active">PT</button>
-                <button>EN</button>
-                <button>ES</button>
-            </div>
+{% extends "base.html" %}
 
-        </div>
-    </div>
-    <nav class="navbar">
-        <ul> <!-- Menu de navegação -->
-            <li><a href="/">Início</a></li>
-            <li><a href="register" >Criar conta</a></li>
-            <li><a href="login">Entrar</a></li>
-            <li><a href="report_problem" class="active">Reportar um problema</a></li>
-        </ul>
-    </nav>
-  </header>
+{% block title %}Report Problem - CoffEMAp{% endblock %}
+
+{% block content %}
 
     <!-- Flash Messages Section -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -57,8 +32,4 @@
           <button type="submit" value="Submit Report" href="report_problem">Enviar</button>
     </div>
     </form>
-  <footer>
-    <p>&copy;coffemap</p> <!-- Rodapé da página -->
-  </footer>
-</body>
-</html>
+{% endblock %}

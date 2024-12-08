@@ -1,25 +1,11 @@
-<!DOCTYPE html>
-<html lang="pt-br"></html>
-<head>
-    <title>Problem Reports</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <header>
-        <div class="top-bar">
-            <h1>COFFEMAP</h1>
-            <div class="header-options">
-                <div class="language-buttons">
-                    <button class="active">PT</button>
-                    <button>EN</button>
-                    <button>ES</button>
-                </div>
-    
-            </div>
-        </div>
+{% extends "base.html" %}
+
+{% block title %}Reports - CoffEMAp{% endblock %}
+
+{% block content %}
         <nav class="navbar">
             <ul> <!-- Menu de navegação -->
-                <li><a onclick="window.location.href=`{{ url_for('admin_page') }}`">Voltar</a></li>
+                <li><a href="/">Voltar</a></li>
             </ul>
         </nav>
     </header>
@@ -34,8 +20,4 @@
         </div>
         {% endfor %}
     </div>
-    <footer>
-        <p>&copy;coffemap</p> <!-- Rodapé da página -->
-    </footer>
-</body>
-</html>
+{% endblock %}

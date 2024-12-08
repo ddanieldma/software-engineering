@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CoffEMAp{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="top-bar">
+            <h1>COFFEMAP</h1>
+            <div class="header-options">
+                <div class="language-buttons">
+                    <button class="active">PT</button>
+                    <button>EN</button>
+                    <button>ES</button>
+                </div>
+            </div>
+        </div>
+        <nav class="navbar">
+            <ul>
+                <li><a href="{{ url_for('home') }}" class="{% block active_home %}{% endblock %}">Início</a></li>
+                <li><a href="{{ url_for('register') }}" class="{% block active_register %}{% endblock %}">Criar conta</a></li>
+                <li><a href="{{ url_for('login') }}" class="{% block active_login %}{% endblock %}">Entrar</a></li>
+                <li><a href="{{ url_for('report_problem') }}" class="{% block active_report %}{% endblock %}">Reportar um problema</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Dinâmico -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Rodapé -->
+    <footer>
+        <p>&copy; CoffEMAp</p>
+    </footer>
+</body>
+</html>
