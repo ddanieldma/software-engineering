@@ -2,7 +2,7 @@
 <html lang="pt-br"></html>
 <head>
     <title>Problem Report - {{ report.get_id() }}</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
@@ -31,10 +31,8 @@
         <p>Status: {{ report.get_status() }}</p>
         <p>Detalhes: {{ report.get_description() }}</p>
     </div>
+    <footer>
+        <p>&copy;coffemap</p> <!-- Rodapé da página -->
+    </footer>
 </body>
-
-<footer>
-    <p>&copy;coffemap</p> <!-- Rodapé da página -->
-</footer>
-
 </html>
