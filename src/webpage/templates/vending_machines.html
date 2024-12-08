@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br"></html>
 <head>
     <title>Vending Machines</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
@@ -48,7 +48,7 @@
             </div>
         </div>
         <nav class="navbar">
-            <ul>
+            <ul> <!-- Menu de navegação -->
                 <li><a href="admin_page">Voltar</a></li>
             </ul>
         </nav>
@@ -69,9 +69,9 @@
         </div>
         {% endfor %}
     </div>
+    <button onclick="submitFavorites()">Salvar Favoritos</button>
     <footer>
         <p>&copy;coffemap</p>
     </footer>
-    <button onclick="submitFavorites()">Salvar Favoritos</button>
 </body>
 </html>

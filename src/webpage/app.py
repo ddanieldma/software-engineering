@@ -121,7 +121,7 @@ def vending_machines_page():
     user_id = session.get('user_id')
 
     favorites = db.execute_query(query, (user_id,), True)
-    # favorites = [x[0] for x in favorites if x[1] == 1]
+    favorites = [x[0] for x in favorites if x[1] == 1]
     print(favorites)
 
     return render_template('vending_machines.html', vending_machines=vending_machines_products.keys(), favorites=favorites)
