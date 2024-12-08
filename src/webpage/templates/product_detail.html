@@ -2,14 +2,38 @@
 <html>
 <head>
     <title>{{ product.get_name() }} - Details</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <header>
+        <div class="top-bar">
+            <h1>COFFEMAP</h1>
+            <div class="header-options">
+                <div class="language-buttons">
+                    <button class="active">PT</button>
+                    <button>EN</button>
+                    <button>ES</button>
+                </div>
+    
+            </div>
+        </div>
+        <nav class="navbar">
+            <ul> <!-- Menu de navegação -->
+                <li><a href="/" >Início</a></li>
+                <li><a href="register" >Criar conta</a></li>
+                <li><a href="login" class="active">Entrar</a></li>
+                <li><a href="report_problem">Reportar um problema</a></li>
+            </ul>
+        </nav>
+      </header>
     <h1>{{ product.get_name() }}</h1>
-    <div class="product-detail-container">
+    <div class="product-detail-container2">
         <p><strong>Price: R$ {{ product.get_price() }}</strong></p>
         <p>{{ product.get_description() }}</p>
     </div>
-    <button onclick="window.location.href='{{ url_for('products_page', location=vending_machine.get_location()) }}'">Back to Products</button>
+    <button onclick="window.location.href=`{{ url_for('products_page', location=vending_machine.get_location()) }}`"`>Back to Products</button> 
+    <footer>
+        <p>&copy;coffemap</p> <!-- Rodapé da página -->
+    </footer>
 </body>
 </html>
