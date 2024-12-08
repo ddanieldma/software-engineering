@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, flash, session, url_for
+from flask_sqlalchemy import SQLAlchemy
 from db import get_db_connection
 from dotenv import load_dotenv
 import hashlib
@@ -32,6 +33,18 @@ def login_required(f):
             return redirect('/login')
         return f(*args, **kwargs)
     return decorated_function
+
+# Configurando sqlalchemy
+usuario = os.getenv("MYSQL_USER")
+senha = os.getenv("MYSQL_PASSWORD")
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://{usuario}:{senha}@localhost/coffe_map"
+
+# Inicializando conexão com a base de dados
+db = SQLAlchemy(app)
+
+# Criando tabelas da base de dados
+with app.app_context():
+    db.create_all()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
