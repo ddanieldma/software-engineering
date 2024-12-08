@@ -13,7 +13,7 @@ body {
     color: #333;
     display: flex;
     justify-content: center;
-    min-height: 100vh;
+    min-height: 1vh;
     flex-direction: column;
     text-align: center;
 
@@ -132,6 +132,9 @@ footer {
     color: white;
     text-align: center;
     padding: 20px;
+    bottom: 0;
+    position: fixed;
+    width: 100%;
 }
 
 /* Estilo para o formulário de criação de conta */
