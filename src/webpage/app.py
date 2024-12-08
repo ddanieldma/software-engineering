@@ -7,6 +7,9 @@ from get_complete_data import vending_machines_products, problem_reports
 from functools import wraps
 from database_managment import DBConnection
 from flask import jsonify
+from report_builder.strategies import AddMetricsStrategy, GroupDataStrategy, FilterDataStrategy
+from report_builder.report_builder import ReportGenerator
+from flask import Response
 
 load_dotenv()
 
@@ -147,22 +150,16 @@ def products_page(location):
             'product_id': product_id
         }
 
+
         try:
             # Connect to the database
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
+            db = DBConnection()
+            
             # Insert the purchase record into the 'compras' table
-            cursor.execute("""
+            db.execute_query("""
                 INSERT INTO compras (product_name, product_price, machine_id, user_id)
                 VALUES (%s, %s, %s, %s)
             """, (product_name, product_price, machine_id, user_id))
-
-            # Commit the transaction
-            conn.commit()
-
-            cursor.close()
-            conn.close()
 
             flash('Buy registered', 'success')
 
@@ -206,15 +203,12 @@ def report_problem():
         user_id = session['user_id']
 
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
+            db=DBConnection()
+
+            db.execute_query("""
                 INSERT INTO problemas_reportados (id_usuario, tipo_problema, descricao, id_maquina)
                 VALUES (%s, %s, %s, %s)
             """, (user_id, tipo_problema, descricao, id_maquina))
-            conn.commit()
-            cursor.close()
-            conn.close()
             flash('Problem report submitted successfully!', 'success')
             return redirect('/report_problem')
         except Exception as err:
@@ -284,18 +278,14 @@ def evaluate():
         )
 
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
+            db=DBConnection()
 
             # Insert evaluation into the 'avaliacoes' table
-            cursor.execute("""
+            db.execute_query("""
                 INSERT INTO avaliacoes (id_usuario, id_maquina, id_produto, nota_produto, nota_maquina, comentario)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """, (user_id, machine_id, product_id, nota_produto, nota_maquina, comentario))
 
-            conn.commit()
-            cursor.close()
-            conn.close()
 
             # Log successful insertion
             logging.info(f"Evaluation successfully inserted: user_id={user_id}, product_id={product_id}, machine_id={machine_id}.")
@@ -362,6 +352,46 @@ def save_favorites():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/generate_report', methods=['POST'])
+@login_required
+def generate_report():
+    # Dados do relatório inicial
+    initial_data = [
+        {"id": 1, "value": 5, "category": "A"},
+        {"id": 2, "value": 15, "category": "B"},
+        {"id": 3, "value": 8, "category": "A"},
+    ]
+    
+    # Estratégia selecionada (via parâmetros, por exemplo)
+    strategy_name = request.form.get('strategy', 'AddMetrics')  # Exemplo: 'AddMetrics', 'GroupData', 'FilterData'
+    
+    # Mapeia os nomes das estratégias para as classes concretas
+    strategies = {
+        'AddMetrics': AddMetricsStrategy(),
+        'GroupData': GroupDataStrategy(),
+        'FilterData': FilterDataStrategy()
+    }
+    
+    # Escolhe a estratégia baseada no nome recebido
+    strategy = strategies.get(strategy_name, AddMetricsStrategy())
+    
+    # Gera o relatório usando o contexto e a estratégia selecionada
+    generator = ReportGenerator(strategy)
+    report_df = generator.generate_report(initial_data)
+    
+    # Converte o DataFrame para CSV
+    csv_data = report_df.to_csv(index=False)
+    
+    # Retorna o CSV como resposta para download
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-disposition": "attachment; filename=report.csv"}
+    )
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
