@@ -68,38 +68,6 @@ def login():
     return render_template('login.html')
 
 
-# def login():
-#     if request.method == 'POST':
-#         email = request.form['email']
-#         password = request.form['password']
-#         password_hash = hashlib.sha256(password.encode()).hexdigest()
-
-#         try:
-#             conn = get_db_connection()
-#             cursor = conn.cursor()
-#             cursor.execute("""
-#                 SELECT * FROM usuarios WHERE email = %s AND senha_hash = %s
-#             """, (email, password_hash))
-#             user = cursor.fetchone()
-#             cursor.close()
-#             conn.close()
-
-#             if user:
-#                 session['user_id'] = user[0]
-#                 flash('Login concluido!', 'success')
-#                 user_object = PersonDB(user[0])
-
-#                 if user_object.get_name() == "admin" or user_object.is_admin():
-#                     return redirect('/admin')
-                
-#                 return redirect('/')
-#             else:
-#                 flash('Invalid email or password', 'danger')
-#         except Exception as err:
-#             flash(f'Error: {err}', 'danger')
-
-#     return render_template('login.html')
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -137,18 +105,24 @@ def register():
     return render_template('register.html')
 
 @app.route('/vending/')
+@login_required
 def vending_machines_page():
     return render_template('vending_machines.html', vending_machines=vending_machines_products.keys())
 
 @app.route('/vending/<location>')
+@login_required
 def products_page(location):
     vending_machine = next((vm for vm in vending_machines_products.keys() if vm.get_location() == location), None)
     if vending_machine:
         machine_products = vending_machines_products.get(vending_machine, {})
-        return render_template('products.html', vending_machine=vending_machine, machine_products=machine_products)
+        if session.get('is_admin'):
+            return render_template('products.html', vending_machine=vending_machine, machine_products=machine_products)
+        else:
+            return render_template('products_user.html', vending_machine=vending_machine, machine_products=machine_products)
     return redirect(url_for('vending_machines_page'))
 
 @app.route('/product/<location>/<product_name>')
+@login_required
 def product_detail_page(location, product_name):
     vending_machine = next((vm for vm in vending_machines_products.keys() if vm.get_location() == location), None)
     if vending_machine:
@@ -201,9 +175,6 @@ def report_page(report_id):
         return render_template('report.html', report=report)
     return redirect(url_for('reports_page'))
 
-# @app.route('/')
-# def home():
-#     return render_template('index.html')
 
 @app.route('/')
 def home():
@@ -223,7 +194,14 @@ def admin_page():
 @app.route('/user_home')
 @login_required
 def user_home():
-    return render_template('user_page.html') 
+    return render_template('user_page.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Logged out successfully.', 'success')
+    return redirect('/')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
