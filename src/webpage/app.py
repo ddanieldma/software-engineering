@@ -6,12 +6,32 @@ import os
 import mysql.connector
 from get_complete_data import vending_machines_products, problem_reports
 from user import PersonDB
+from functools import wraps
 
 load_dotenv()
 
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
+SPECIAL_ADMIN_PASSWORD=os.getenv("ADMIN_PASSWORD")
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session or not session.get('is_admin', False):
+            flash('Admin access required!', 'danger')
+            return redirect('/')
+        return f(*args, **kwargs)
+    return decorated_function
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please log in to access this page', 'danger')
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -24,7 +44,7 @@ def login():
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT * FROM usuarios WHERE email = %s AND senha_hash = %s
+                SELECT id, is_admin FROM usuarios WHERE email = %s AND senha_hash = %s
             """, (email, password_hash))
             user = cursor.fetchone()
             cursor.close()
@@ -32,13 +52,14 @@ def login():
 
             if user:
                 session['user_id'] = user[0]
-                flash('Login concluido!', 'success')
-                user_object = PersonDB(user[0])
+                session['is_admin'] = bool(user[1])  # Convert to Python's boolean
+                flash('Login successful!', 'success')
 
-                if user_object.get_name() == "admin" or user_object.is_admin():
+                if session['is_admin']:
                     return redirect('/admin')
+                else:
+                    return redirect('/user_home')
                 
-                return redirect('/')
             else:
                 flash('Invalid email or password', 'danger')
         except Exception as err:
@@ -46,33 +67,69 @@ def login():
 
     return render_template('login.html')
 
+
+# def login():
+#     if request.method == 'POST':
+#         email = request.form['email']
+#         password = request.form['password']
+#         password_hash = hashlib.sha256(password.encode()).hexdigest()
+
+#         try:
+#             conn = get_db_connection()
+#             cursor = conn.cursor()
+#             cursor.execute("""
+#                 SELECT * FROM usuarios WHERE email = %s AND senha_hash = %s
+#             """, (email, password_hash))
+#             user = cursor.fetchone()
+#             cursor.close()
+#             conn.close()
+
+#             if user:
+#                 session['user_id'] = user[0]
+#                 flash('Login concluido!', 'success')
+#                 user_object = PersonDB(user[0])
+
+#                 if user_object.get_name() == "admin" or user_object.is_admin():
+#                     return redirect('/admin')
+                
+#                 return redirect('/')
+#             else:
+#                 flash('Invalid email or password', 'danger')
+#         except Exception as err:
+#             flash(f'Error: {err}', 'danger')
+
+#     return render_template('login.html')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         nome = request.form['nome']
         email = request.form['email']
         senha = request.form['senha']
+        admin_password = request.form.get('admin_password', '')  # Optional field
 
         # Hash the password
         senha_hash = hashlib.sha256(senha.encode()).hexdigest()
+
+        # Determine if the user is an admin
+        is_admin = 1 if admin_password == SPECIAL_ADMIN_PASSWORD else 0
 
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
             try:
                 cursor.execute("""
-                INSERT INTO usuarios (nome, email, senha_hash)
-                VALUES (%s, %s, %s)
-                """, (nome, email, senha_hash))
+                INSERT INTO usuarios (nome, email, senha_hash, is_admin)
+                VALUES (%s, %s, %s, %s)
+                """, (nome, email, senha_hash, is_admin))
                 conn.commit()
                 cursor.close()
                 conn.close()
-                flash('Successfully! registered', 'success')
+                flash('Successfully registered!', 'success')
                 return redirect('/login')
             except mysql.connector.IntegrityError:
                 flash('Error: Email already registered.', 'danger')
 
-            
             return redirect('/register')
         except Exception as err:
             flash(f'Error: {err}', 'danger')
@@ -136,6 +193,7 @@ def reports_page():
     return render_template('reports.html', problem_reports=problem_reports)
 
 @app.route('/reports/<report_id>')
+@login_required
 def report_page(report_id):
     report = next((r for r in problem_reports if r.get_id() == int(report_id)), None)
     print(report)
@@ -143,11 +201,22 @@ def report_page(report_id):
         return render_template('report.html', report=report)
     return redirect(url_for('reports_page'))
 
+# @app.route('/')
+# def home():
+#     return render_template('index.html')
+
 @app.route('/')
 def home():
-    return render_template('index.html')
+    if 'user_id' in session:
+        if session.get('is_admin'):
+            return redirect('/admin')
+        else:
+            return redirect('/user_home')
+    return render_template('index.html')  # For unauthenticated users
+
 
 @app.route('/admin')
+@admin_required
 def admin_page():
     return render_template('admin_page.html')
 
