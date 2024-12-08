@@ -3,10 +3,10 @@ from db import get_db_connection
 from dotenv import load_dotenv
 import hashlib
 import os
-import mysql.connector
 from get_complete_data import vending_machines_products, problem_reports
-from user import PersonDB
 from functools import wraps
+from database_managment import DBConnection
+from flask import jsonify
 
 load_dotenv()
 
@@ -51,14 +51,12 @@ def login():
         password_hash = hashlib.sha256(password.encode()).hexdigest()
 
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT id, is_admin FROM usuarios WHERE email = %s AND senha_hash = %s
-            """, (email, password_hash))
-            user = cursor.fetchone()
-            cursor.close()
-            conn.close()
+            query = """
+                SELECT id, is_admin FROM usuarios WHERE email = %s AND senha_hash = %s"""
+            params = (email, password_hash)
+
+            db = DBConnection()
+            user = db.execute_query(query, params, fetch_all=False)
 
             if user:
                 session['user_id'] = user[0]
@@ -93,22 +91,16 @@ def register():
         is_admin = 1 if admin_password == SPECIAL_ADMIN_PASSWORD else 0
 
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            try:
-                cursor.execute("""
+            query = """
                 INSERT INTO usuarios (nome, email, senha_hash, is_admin)
                 VALUES (%s, %s, %s, %s)
-                """, (nome, email, senha_hash, is_admin))
-                conn.commit()
-                cursor.close()
-                conn.close()
-                flash('Successfully registered!', 'success')
-                return redirect('/login')
-            except mysql.connector.IntegrityError:
-                flash('Error: Email already registered.', 'danger')
+            """
+            params = (nome, email, senha_hash, is_admin)
 
-            return redirect('/register')
+            db = DBConnection()
+            db.execute_query(query, params)
+            flash('Successfully registered!', 'success')
+            return redirect('/login')
         except Exception as err:
             flash(f'Error: {err}', 'danger')
 
@@ -117,7 +109,22 @@ def register():
 @app.route('/vending/')
 @login_required
 def vending_machines_page():
-    return render_template('vending_machines.html', vending_machines=vending_machines_products.keys())
+    # get favorite vending machines
+    db = DBConnection()
+
+    query = """
+        SELECT id_maquina, is_favorite
+        FROM favoritos
+        WHERE id_usuario = %s
+    """
+
+    user_id = session.get('user_id')
+
+    favorites = db.execute_query(query, (user_id,), True)
+    favorites = [x[0] for x in favorites if x[1] == 1]
+    print(favorites)
+
+    return render_template('vending_machines.html', vending_machines=vending_machines_products.keys(), favorites=favorites)
 
 
 @app.route('/vending/<location>', methods=['GET','POST'])
@@ -319,6 +326,42 @@ def logout():
     flash('Logged out successfully.', 'success')
     return redirect('/')
 
+@app.route('/save_favorites', methods=['POST'])
+def save_favorites():
+    try:
+        data = request.get_json()
+        favorites = data.get('favorites', [])
+
+        if not favorites:
+            return jsonify({"message": "Nenhuma máquina selecionada como favorita."}), 400
+        
+        # Cria a conexão com o banco de dados
+        db = DBConnection()
+
+        user_id = session.get('user_id')
+
+        # Primeiro, definimos todas as máquinas de venda do usuário como não favoritas (FALSE)
+        query_reset = """
+            UPDATE favoritos
+            SET is_favorite = FALSE
+            WHERE id_usuario = %s
+        """
+        db.execute_query(query_reset, (user_id,))
+
+        # Agora, atualizamos para TRUE as máquinas que estão na lista de favoritos
+        query_update_favorites = """
+            INSERT INTO favoritos (id_usuario, id_maquina, is_favorite)
+            VALUES (%s, %s, TRUE)
+            ON DUPLICATE KEY UPDATE is_favorite = TRUE
+        """
+
+        for machine_id in favorites:
+            db.execute_query(query_update_favorites, (user_id, machine_id))
+
+        return jsonify({"message": "Favoritos salvos com sucesso."}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
