@@ -1,31 +1,53 @@
+import threading
 import webpage.db as db
 
 class DBConnection:
     """
-    Handles connection and interaction with the database.
+    Handles connection and interaction with the database, following the Singleton pattern.
 
     Methods:
         get_connection(): Establishes and returns a connection to the database.
         close_connection(): Closes the active database connection.
         execute_query(query, params=None, fetch_all=False): Executes an SQL query on the database, with optional parameters.
-        get_all_vending_machines(): Retrieves all available vending machines from the database.
     """
+    _instance = None
+    _lock = threading.Lock()
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Ensures only one instance of the class is created (thread-safe).
+        """
+        if not cls._instance:
+            with cls._lock:
+                if not cls._instance:
+                    cls._instance = super(DBConnection, cls).__new__(cls)
+        return cls._instance
+
     def __init__(self):
-        """Initializes the DBConnection instance."""
-        self._connection = None
+        """
+        Initializes the DBConnection instance, ensuring the connection is not reinitialized if already exists.
+        """
+        if not hasattr(self, '_connection'):
+            self._connection = None
 
     def get_connection(self):
         """
         Establishes a connection to the database using the predefined configuration.
-        
+
         Returns:
             mysql.connector.connection.MySQLConnection: The active database connection.
         """
-        self._connection = db.get_db_connection()
-    
+        if not self._connection:
+            self._connection = db.get_db_connection()
+        return self._connection
+
     def close_connection(self):
-        """Closes the active database connection."""
-        self._connection.close()
+        """
+        Closes the active database connection and resets the connection instance.
+        """
+        if self._connection:
+            self._connection.close()
+            self._connection = None
 
     def execute_query(self, query, params=None, fetch_all=False):
         """
@@ -37,14 +59,21 @@ class DBConnection:
             fetch_all (bool, optional): If True, fetches all results; otherwise fetches only the first result. Defaults to False.
 
         Returns:
-            list: A list of the query results. If fetch_all is False, returns only the first result.
+            list or tuple: A list of query results if fetch_all is True, otherwise the first result.
         """
-        self.get_connection()
-        cursor = self._connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
 
         cursor.execute(query, params)
-        
+
         result = cursor.fetchall() if fetch_all else cursor.fetchone()
-        
-        self.close_connection()
+
+        # Explicitly close the cursor but keep the connection open for further use
+        cursor.close()
         return result
+    
+    def __del__(self):
+        """
+        Ensures the database connection is closed when the instance is deleted.
+        """
+        self.close_connection()
