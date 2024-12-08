@@ -1,45 +1,16 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CoffEMAp</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <header>
-        <div class="top-bar">
-            <h1>COFFEMAP</h1>
-            <div class="header-options">
-                <div class="language-buttons">
-                    <button class="active">PT</button>
-                    <button>EN</button>
-                    <button>ES</button>
-                </div>
-    
-            </div>
-        </div>
-        <nav class="navbar">
-            <ul> <!-- Menu de navegação -->
-                <li><a href="" class="active">Início</a></li>
-                <li><a href="register" >Criar conta</a></li>
-                <li><a href="login">Entrar</a></li>
-                <li><a href="report_problem">Reportar um problema</a></li>
-            </ul>
-        </nav>
-    </header>
+{% extends "base.html" %}
 
-    <section id="sobre"> <!-- Seção de informações sobre o projeto -->
-        <h2>Sobre Nós</h2> 
-        <p>Está na FGV e sentiu vontade de fazer um lanchinho? e segue falando sobre como funciona.</p>
-    </section>
+{% block title %}Início - CoffEMAp{% endblock %}
+{% block active_home %}active{% endblock %}
 
-    <section id="cta"> <!-- Seção para criação de conta -->
-        <h2>Pronto para começar?</h2>
-        <a href="criar_conta.html" class="cta-btn">Criar conta</a>
-    </section>
-    <footer id="criarconta">
-        <p>&copy; coffemap</p> <!-- Rodapé da página -->
-    </footer>
-</body>
-</html>
+{% block content %}
+<section id="sobre">
+    <h2>Sobre Nós</h2> 
+    <p>Está na FGV e sentiu vontade de fazer um lanchinho? e segue falando sobre como funciona.</p>
+</section>
+
+<section id="cta">
+    <h2>Pronto para começar?</h2>
+    <a href="{{ url_for('register') }}" class="cta-btn">Criar conta</a>
+</section>
+{% endblock %}

@@ -7,6 +7,9 @@ from get_complete_data import vending_machines_products, problem_reports
 from functools import wraps
 from database_managment import DBConnection
 from flask import jsonify
+from report_builder.report_builder import ReportGenerator
+from flask import Response
+from report_builder.strategies import VendingMachineReportStrategy
 
 load_dotenv()
 
@@ -147,22 +150,16 @@ def products_page(location):
             'product_id': product_id
         }
 
+
         try:
             # Connect to the database
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
+            db = DBConnection()
+            
             # Insert the purchase record into the 'compras' table
-            cursor.execute("""
+            db.execute_query("""
                 INSERT INTO compras (product_name, product_price, machine_id, user_id)
                 VALUES (%s, %s, %s, %s)
             """, (product_name, product_price, machine_id, user_id))
-
-            # Commit the transaction
-            conn.commit()
-
-            cursor.close()
-            conn.close()
 
             flash('Buy registered', 'success')
 
@@ -206,15 +203,12 @@ def report_problem():
         user_id = session['user_id']
 
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
+            db=DBConnection()
+
+            db.execute_query("""
                 INSERT INTO problemas_reportados (id_usuario, tipo_problema, descricao, id_maquina)
                 VALUES (%s, %s, %s, %s)
             """, (user_id, tipo_problema, descricao, id_maquina))
-            conn.commit()
-            cursor.close()
-            conn.close()
             flash('Problem report submitted successfully!', 'success')
             return redirect('/report_problem')
         except Exception as err:
@@ -284,18 +278,14 @@ def evaluate():
         )
 
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
+            db=DBConnection()
 
             # Insert evaluation into the 'avaliacoes' table
-            cursor.execute("""
+            db.execute_query("""
                 INSERT INTO avaliacoes (id_usuario, id_maquina, id_produto, nota_produto, nota_maquina, comentario)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """, (user_id, machine_id, product_id, nota_produto, nota_maquina, comentario))
 
-            conn.commit()
-            cursor.close()
-            conn.close()
 
             # Log successful insertion
             logging.info(f"Evaluation successfully inserted: user_id={user_id}, product_id={product_id}, machine_id={machine_id}.")
@@ -362,6 +352,44 @@ def save_favorites():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/generate_report', methods=['GET', 'POST'])
+@login_required
+def generate_report():
+    if request.method == 'POST':
+        # Select strategy based on user input (you can add more strategies as needed)
+        strategy = VendingMachineReportStrategy()
+
+        # Create a report generator with the selected strategy
+        report_generator = ReportGenerator(strategy)
+
+        # Generate the report using the strategy
+        report_data = report_generator.generate_report(initial_data=[])
+
+        # Extract the revenue and rating data as CSV for download
+        revenue_and_rating_csv = report_data['revenue_and_rating'].to_csv(index=False)
+        stock_csv = report_data['stock_csv']  # Already in CSV format
+        stock_json = report_data['stock_json']  # Already in JSON format
+
+        # Return multiple files (CSV and JSON) as responses
+        response = Response(
+            revenue_and_rating_csv,
+            mimetype="text/csv",
+            headers={"Content-disposition": "attachment; filename=revenue_and_rating.csv"}
+        )
+
+        # You can also provide stock_csv and stock_json similarly
+        # Or combine them into a zip file if necessary
+
+        return response  # Return the first response (you can add logic to combine CSV and JSON if necessary)
+
+    # If it's a GET request, render the strategy selection form
+    return render_template('generate_report.html')
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

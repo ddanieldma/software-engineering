@@ -1,9 +1,8 @@
 import mysql.connector
 from dotenv import load_dotenv
 import os
-import mysql.connector
-from faker import Faker
 import random
+from faker import Faker
 
 # Carregar as variáveis de ambiente do arquivo .env
 load_dotenv()
@@ -14,61 +13,13 @@ senha = os.getenv("MYSQL_PASSWORD")
 # Conectar ao banco de dados MySQL
 conexao = mysql.connector.connect(
     host="localhost",
-    user=usuario,
-    password=senha,
-    database="coffe_map"
+    user=usuario,  # Substitua pelo seu usuário MySQL
+    password=senha,  # Substitua pela sua senha MySQL
+    database="coffe_map"  # Nome do banco de dados onde as tabelas serão criadas
 )
 
 # Criar um cursor para executar comandos SQL
 cursor = conexao.cursor()
-
-# Truncando tabelas para sempre gerar dados novos.
-cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")  # Desativar verificações de chave estrangeira
-cursor.execute("TRUNCATE TABLE produtos;")
-cursor.execute("TRUNCATE TABLE vending_machines;")
-cursor.execute("TRUNCATE TABLE problemas_reportados;")
-cursor.execute("TRUNCATE TABLE usuarios;")
-cursor.execute("TRUNCATE TABLE avaliacoes;")
-cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")  # Reativar verificações de chave estrangeira
-
-# Adicinando dados fixos.
-# Populate 'usuarios' table
-cursor.execute("""
-INSERT INTO usuarios (nome, email, senha_hash, role, is_admin, is_vendedor)
-VALUES 
-    ('Alice Santos', 'alice@example.com', 'hashed_password_1', 'Admin', TRUE, FALSE),
-    ('Bruno Oliveira', 'bruno@example.com', 'hashed_password_2', 'Vendedor', FALSE, TRUE),
-    ('Carlos Silva', 'carlos@example.com', 'hashed_password_3', 'Comprador', FALSE, FALSE);
-""")
-
-# Populate 'vending_machines' table
-cursor.execute("""
-INSERT INTO vending_machines (localizacao)
-VALUES 
-    ('Rua da Praia, 123 - Centro, Porto Alegre')
-""")
-
-# Populate 'produtos' table with nutritional information added
-cursor.execute("""
-INSERT INTO produtos (nome, descricao, preco, estoque, categoria, imagem_url, id_vending_machine)
-VALUES 
-    ('Café Expresso', 'Café quente e encorpado, servido em um copo pequeno. Informação Nutricional: 2 kcal, 0g gordura, 0g carboidrato, 0g proteína.', 5.00, 100, 'Bebidas', 'https://example.com/cafe_expresso.jpg', 1)
-""")
-
-
-# Populate 'problemas_reportados' table
-cursor.execute("""
-INSERT INTO problemas_reportados (id_usuario, tipo_problema, descricao, status, id_maquina)
-VALUES 
-    (1, 'Vending Machine', 'Máquina não está aceitando pagamentos com cartão', 'Aberto', 1)
-""")
-
-# Populate 'avaliacoes' table
-cursor.execute("""
-INSERT INTO avaliacoes (rating, id_maquina)
-VALUES 
-    (4.5, 1)
-""")
 
 # Instanciar o Faker para gerar dados falsos
 faker = Faker()
@@ -133,11 +84,89 @@ def populate_problemas_reportados(n):
             VALUES (%s, %s, %s, %s, %s);
         """, (id_usuario, tipo_problema, descricao, status, id_maquina))
 
+# Função para gerar ratings de vending machines
+def populate_ratings(n):
+    cursor.execute("SELECT id FROM vending_machines")
+    vending_machines_ids = [row[0] for row in cursor.fetchall()]
+
+    for _ in range(n):
+        rating = round(random.uniform(0, 5), 1)
+        id_maquina = random.choice(vending_machines_ids)
+        cursor.execute("""
+            INSERT INTO ratings (rating, id_maquina)
+            VALUES (%s, %s);
+        """, (rating, id_maquina))
+
+# Função para gerar máquinas favoritas dos usuários
+def populate_favoritos(n):
+    cursor.execute("SELECT id FROM usuarios")
+    usuarios_ids = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute("SELECT id FROM vending_machines")
+    vending_machines_ids = [row[0] for row in cursor.fetchall()]
+
+    for _ in range(n):
+        id_usuario = random.choice(usuarios_ids)
+        id_maquina = random.choice(vending_machines_ids)
+        is_favorite = random.choice([True, False])
+        cursor.execute("""
+            INSERT INTO favoritos (id_usuario, id_maquina, is_favorite)
+            VALUES (%s, %s, %s);
+        """, (id_usuario, id_maquina, is_favorite))
+
+# Função para gerar compras
+def populate_compras(n):
+    cursor.execute("SELECT id FROM usuarios")
+    usuarios_ids = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute("SELECT id FROM produtos")
+    produtos_ids = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute("SELECT id FROM vending_machines")
+    vending_machines_ids = [row[0] for row in cursor.fetchall()]
+
+    for _ in range(n):
+        user_id = random.choice(usuarios_ids)
+        product_id = random.choice(produtos_ids)
+        product_price = round(random.uniform(1.0, 100.0), 2)
+        machine_id = random.choice(vending_machines_ids)
+        cursor.execute("""
+            INSERT INTO compras (user_id, product_name, product_price, machine_id)
+            VALUES (%s, %s, %s, %s);
+        """, (user_id, faker.word(), product_price, machine_id))
+
+# Função para gerar avaliações
+def populate_avaliacoes(n):
+    cursor.execute("SELECT id FROM usuarios")
+    usuarios_ids = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute("SELECT id FROM produtos")
+    produtos_ids = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute("SELECT id FROM vending_machines")
+    vending_machines_ids = [row[0] for row in cursor.fetchall()]
+
+    for _ in range(n):
+        id_usuario = random.choice(usuarios_ids)
+        id_produto = random.choice(produtos_ids)
+        id_maquina = random.choice(vending_machines_ids)
+        nota_maquina = random.randint(1, 5)
+        nota_produto = random.randint(1, 5)
+        comentario = faker.text(max_nb_chars=140)
+        cursor.execute("""
+            INSERT INTO avaliacoes (id_usuario, id_maquina, id_produto, nota_maquina, nota_produto, comentario)
+            VALUES (%s, %s, %s, %s, %s, %s);
+        """, (id_usuario, id_maquina, id_produto, nota_maquina, nota_produto, comentario))
+
 # Populando as tabelas com dados falsos
 populate_usuarios(10)          # 10 usuários
 populate_vending_machines(5)   # 5 vending machines
 populate_produtos(20)          # 20 produtos
 populate_problemas_reportados(15)  # 15 problemas reportados
+populate_ratings(10)           # 10 ratings
+populate_favoritos(15)         # 15 favoritos
+populate_compras(25)           # 25 compras
+populate_avaliacoes(30)        # 30 avaliações
 
 # Confirmar as mudanças no banco de dados
 conexao.commit()

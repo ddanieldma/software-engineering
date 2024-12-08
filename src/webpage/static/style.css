@@ -137,7 +137,32 @@ footer {
     width: 100%;
 }
 
-/* Estilo para o formulário de criação de conta */
+.button-container_report_fav {
+    display: flex;
+    justify-content: space-between; /* Distribute space evenly */
+    gap: 10px; /* Optional: Adds space between buttons */
+    margin-top: 20px; /* Adds some space above the buttons */
+    margin-bottom: 45px;
+}
+
+.button-container_report_fav button {
+    flex: 1; /* Makes buttons fill available space */
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff; /* Button background color */
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.button-container_report_fav button:hover {
+    background-color: #0056b3; /* Button hover color */
+}
+
+
+/* Estilo para os formulários */
 form {
     display: flex;
     flex-direction: column;
@@ -257,4 +282,12 @@ h1, p {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.btn{
+    text-decoration:none; 
+    padding:10px 20px; 
+    border-radius:5px; 
+    background-color:white; 
+    color:black;
 }
