@@ -94,9 +94,11 @@ CREATE TABLE IF NOT EXISTS avaliacoes (
     nota_maquina DECIMAL(2, 1) NOT NULL CHECK (nota_maquina >= 0 AND nota_maquina <= 5), -- Nota de 0.0 a 5.0
     nota_produto DECIMAL(2, 1) NOT NULL CHECK (nota_produto >= 0 AND nota_produto <= 5), -- Nota de 0.0 a 5.0
     data_avaliacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    comentario TEXT,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
     FOREIGN KEY (id_maquina) REFERENCES vending_machines(id),
     FOREIGN KEY (id_produto) REFERENCES produtos(id)
+               
 );
 """)
 

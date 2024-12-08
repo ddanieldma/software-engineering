@@ -151,5 +151,34 @@ def home():
 def admin_page():
     return render_template('admin_page.html')
 
+@app.route('/evaluate', methods=['GET', 'POST'])
+def evaluate():
+    if request.method == 'POST':
+        nota_produto = request.form['nota_produto']
+        nota_maquina = request.form['nota_maquina']
+        comentario = request.form['comentario']
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                INSERT INTO avaliacoes (nota_produto, nota_maquina, comentario)
+                VALUES (%s, %s, %s)
+            """, (nota_produto, nota_maquina, comentario))
+
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            flash('Avaliação registrada com sucesso!', 'success')
+            return redirect('/evaluate')
+        except Exception as err:
+            flash(f'Erro ao registrar avaliação: {err}', 'danger')
+
+    return render_template('evaluation.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
+
