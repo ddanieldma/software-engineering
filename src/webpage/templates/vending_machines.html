@@ -1,8 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Vending Machines - CoffEMAp{% endblock %}
+
+{% block content %}
 <!DOCTYPE html>
-<html lang="pt-br"></html>
+<html lang="pt-br">
 <head>
     <title>Vending Machines</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='products_style.css') }}">
+    <script> 
+        // Sets for managing favorite and report selections
+        const favorites = new Set();
+        const reportSelections = new Set();
+
+        // Manage favorite selection
+        function toggleFavorite(machineId) {
+            const checkbox = document.getElementById(`favorite-${machineId}`);
+            if (checkbox.checked) {
+                favorites.add(machineId);
+            } else {
+                favorites.delete(machineId);
+            }
+        }
+
+        // Manage report selection
+        function toggleReportSelection(machineId) {
+            const checkbox = document.getElementById(`report-${machineId}`);
+            if (checkbox.checked) {
+                reportSelections.add(machineId);
+            } else {
+                reportSelections.delete(machineId);
+            }
+        }
+
+        // Submit favorite selections
+        function submitFavorites() {
+            fetch("{{ url_for('save_favorites') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ favorites: Array.from(favorites) }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Favoritos salvos com sucesso!");
+                } else {
+                    alert("Erro ao salvar favoritos.");
+                }
+            });
+        }
+
+        // // Submit selected machines for report generation
+        // function submitReport() {
+        //     fetch("{{ url_for('generate_report') }}", {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //         body: JSON.stringify({ report_machines: Array.from(reportSelections) }),
+        //     })
+        //     .then(response => {
+        //         if (response.ok) {
+        //             window.location.href = response.url;
+        //         } else {
+        //             alert("Erro ao gerar relatório.");
+        //         }
+        //     });
+        // }
+    </script>
 </head>
 <body>
     <header>
@@ -14,7 +80,6 @@
                     <button>EN</button>
                     <button>ES</button>
                 </div>
-    
             </div>
         </div>
         <nav class="navbar">
@@ -29,12 +94,29 @@
         <div class="item">
             <h3>Máquina de venda {{ vm.get_id() }}</h3>
             <p>{{ vm.get_location() }}</p>
-            <button onclick="window.location.href=`{{ url_for('products_page', location=vm.get_location()) }}`">Ver produtos</button>
+            <!-- Checkbox for favorite -->
+            <label>
+                <input type="checkbox" id="favorite-{{ vm.get_id() }}" 
+                       onchange="toggleFavorite('{{ vm.get_id() }}')" 
+                       {% if vm.get_id() in favorites %} checked {% endif %}>
+                Favoritar
+            </label>
+            <!-- Checkbox for adding to report -->
+            <label>
+                <input type="checkbox" id="report-{{ vm.get_id() }}" 
+                       onchange="toggleReportSelection('{{ vm.get_id() }}')">
+                Incluir no relatório
+            </label>
+            <button onclick="window.location.href='{{ url_for('products_page', location=vm.get_location()) }}'">Ver produtos</button>
         </div>
         {% endfor %}
     </div>
-    <footer>
-        <p>&copy;coffemap</p> <!-- Rodapé da página -->
+    <div class="button-container_report_fav">
+        <button onclick="window.location.href='{{ url_for('generate_report') }}'">Gerar Relatório</button>
+        <button onclick="submitFavorites()">Salvar Favoritos</button>
+    </div>
+        <p>&copy;coffemap</p>
     </footer>
 </body>
 </html>
+{% endblock %}

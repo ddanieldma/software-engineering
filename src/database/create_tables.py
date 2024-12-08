@@ -85,6 +85,19 @@ CREATE TABLE IF NOT EXISTS ratings (
 );
 """)
 
+
+# Criar tabela de vending machines favoritas dos usuários
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS favoritos (
+    id_usuario INT NOT NULL,
+    id_maquina INT NOT NULL,
+    is_favorite BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (id_usuario, id_maquina),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
+    FOREIGN KEY (id_maquina) REFERENCES vending_machines(id)
+);
+""")
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS coffe_map.compras (
     id INT AUTO_INCREMENT PRIMARY KEY,        -- Unique identifier for each purchase
@@ -98,9 +111,6 @@ CREATE TABLE IF NOT EXISTS coffe_map.compras (
 """
 )
 
-cursor.execute("""
-DROP TABLE `coffe_map`.`avaliacoes`;
-""")
                
 # Criar tabela de avaliações
 cursor.execute("""

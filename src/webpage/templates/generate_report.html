@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Report</h1>
+        <form method="POST" action="{{ url_for('generate_report') }}">
+            <label for="strategy">Choose Report Strategy:</label>
+            <select name="strategy" id="strategy" required>
+                <option value="VendingMachineReportStrategy">Vending Machine Report</option>
+                <!-- Add more strategies if necessary -->
+                <!-- Example:
+                <option value="AnotherStrategy">Another Report Strategy</option>
+                -->
+            </select>
+            <br><br>
+            <button type="submit">Generate Report</button>
+        </form>
+    </div>
+</body>
+</html>
+

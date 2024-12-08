@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html lang="pt-br"></html>
-<head>
-    <title>Problem Report - {{ report.get_id() }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <header>
-        <div class="top-bar">
-            <h1>COFFEMAP</h1>
-            <div class="header-options">
-                <div class="language-buttons">
-                    <button class="active">PT</button>
-                    <button>EN</button>
-                    <button>ES</button>
-                </div>
-    
-            </div>
-        </div>
+{% extends "base.html" %}
+
+{% block title %}Report - CoffEMAp{% endblock %}
+
+{% block content %}
         <nav class="navbar">
             <ul> <!-- Menu de navegação -->
                 <li><a onclick="window.location.href=`{{ url_for('reports_page') }}`">Voltar</a></li>
@@ -31,8 +17,4 @@
         <p>Status: {{ report.get_status() }}</p>
         <p>Detalhes: {{ report.get_description() }}</p>
     </div>
-    <footer>
-        <p>&copy;coffemap</p> <!-- Rodapé da página -->
-    </footer>
-</body>
-</html>
+{% endblock %}
