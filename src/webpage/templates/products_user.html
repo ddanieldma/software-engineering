@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html lang="pt-br"></html>
-<head>
-    <title>Products - {{ vending_machine.get_id() }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <header>
-        <div class="top-bar">
-            <h1>COFFEMAP</h1>
-            <div class="header-options">
-                <div class="language-buttons">
-                    <button class="active">PT</button>
-                    <button>EN</button>
-                    <button>ES</button>
-                </div>
-    
-            </div>
-        </div>
+{% extends "base.html" %}
+
+{% block title %}Products user - CoffEMAp{% endblock %}
+
+{% block content %}
         <nav class="navbar">
             <ul> <!-- Menu de navegação -->
                 <li><a href="/">Voltar</a></li>
@@ -38,8 +24,4 @@
         {% endfor %}
     </div>
     <button onclick="window.location.href=`{{ url_for('vending_machines_page') }}`">Voltar para as máquinas de vendas</button>
-    <footer>
-        <p>&copy;coffemap</p> <!-- Rodapé da página -->
-    </footer>
-</body>
-</html>
+{% endblock %}
