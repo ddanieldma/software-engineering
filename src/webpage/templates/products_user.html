@@ -41,6 +41,7 @@
                 <input type="hidden" name="product_name" value="{{ product.get_name() }}">
                 <input type="hidden" name="product_price" value="{{ product.get_price() }}">
                 <input type="hidden" name="machine_id" value="{{ vending_machine.get_id() }}">
+                <input type="hidden" name="product_id" value="{{ quantity[1] }}">
                 <!-- Buy button -->
                 <button type="submit" class="btn btn-primary">Comprar</button>
             </form>
