@@ -220,5 +220,10 @@ def home():
 def admin_page():
     return render_template('admin_page.html')
 
+@app.route('/user_home')
+@login_required
+def user_home():
+    return render_template('user_page.html') 
+
 if __name__ == '__main__':
     app.run(debug=True)
