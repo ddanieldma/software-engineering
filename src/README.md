@@ -28,6 +28,8 @@ MYSQL_PASSWORD=sua_senha   &nbsp;&nbsp;&nbsp;    # A senha criada durante a inst
 
 FLASK_SECRET_KEY=secret    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    # Qualquer chave desejada para a aplicação Flask
 
+ADMIN_PASSWORD=some_password &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  # Uma senha qualquer que vai te permitir criar contas de admin na interface do site.
+
 
 Em seguida execute os arquivos na pasta database na seguinte ordem
 
@@ -48,33 +50,8 @@ python database/populate_db.py
 
 Com isso você terá populado o database com dados fictícios.
 
-Em geral os dados fictícios são aleatórios, mas os seguintes logins estarão presentes:
+Em geral os dados fictícios são aleatórios, mas você pode criar contas de admin com a senha de admin que você vai selecionar
 
-Login de Admin
-
-Nome: 'Alice Santos', 
-
-E-mail: 'alice@example.com', 
-
-Senha: 'hashed_password_1',
-
-Login de User normal
-
-Nome: 'Carlos Silva', 
-
-E-mail: 'carlos@example.com', 
-
-Senha: 'hashed_password_3',
-
-Também teremos a seguinte entrada de vending machine
-
-Entrada de vending machine
-
-Id: 1
-
-Localização: Rua da Praia, 123 - Centro, Porto Alegre
-
-Use o id dessa vending machine na página de reporte de problemas para evitar erros do banco de dados.
 
 Após o banco de dados e tabelas terem sido criados e populados você deve executar o `app.py`
 
