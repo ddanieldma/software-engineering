@@ -10,6 +10,16 @@ from functools import wraps
 
 load_dotenv()
 
+import logging
+
+# Set up logging configuration
+logging.basicConfig(
+    filename='app.log',  # Logs will be saved to this file
+    level=logging.DEBUG,  # Log all levels DEBUG and above
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
@@ -109,9 +119,58 @@ def register():
 def vending_machines_page():
     return render_template('vending_machines.html', vending_machines=vending_machines_products.keys())
 
-@app.route('/vending/<location>')
+@app.route('/vending/<location>', methods=['GET','POST'])
 @login_required
 def products_page(location):
+    if request.method == "POST":
+        # Extract product details from the form
+        product_name = request.form["product_name"]
+        product_price = request.form["product_price"]
+        machine_id = request.form["machine_id"]
+        user_id = session.get('user_id')  # Use 'user_id' to track the user making the purchase
+
+        # Log the received data for debugging
+        app.logger.debug(f"Received purchase data: Product Name: {product_name}, Price: {product_price}, Machine ID: {machine_id}, User ID: {user_id}")
+
+        try:
+            # Connect to the database
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Log database connection
+            app.logger.debug("Database connection established.")
+
+            try:
+                # Insert the purchase record into the 'compras' table
+                cursor.execute("""
+                    INSERT INTO compras (product_name, product_price, machine_id, user_id)
+                    VALUES (%s, %s, %s, %s)
+                """, (product_name, product_price, machine_id, user_id))
+
+                # Commit the transaction
+                conn.commit()
+
+                # Log successful insertion
+                app.logger.debug(f"Purchase of {product_name} by user {user_id} registered successfully.")
+
+                cursor.close()
+                conn.close()
+
+                flash('Buy registered', 'success')
+                return redirect('/vending')
+
+            except mysql.connector.IntegrityError as e:
+                # Log integrity error (e.g., duplicate entries)
+                app.logger.error(f"Integrity error occurred: {e}")
+                flash('Error', 'danger')
+
+            return redirect('/vending')
+        except Exception as err:
+            # Log generic errors (e.g., connection issues)
+            app.logger.error(f"Error during database operation: {err}")
+            flash(f'Error: {err}', 'danger')
+
+    # Retrieve and display products if the request method is GET
     vending_machine = next((vm for vm in vending_machines_products.keys() if vm.get_location() == location), None)
     if vending_machine:
         machine_products = vending_machines_products.get(vending_machine, {})
