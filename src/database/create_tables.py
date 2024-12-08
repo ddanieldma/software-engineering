@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS problemas_reportados (
 """)
 
 # Criar tabela de ratings
+# Criar tabela de ratings
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ratings (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -97,6 +98,25 @@ CREATE TABLE coffe_map.compras (
 """
 )
                
+# Criar tabela de avaliações
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS avaliacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_maquina INT NOT NULL,
+    id_produto INT NOT NULL,
+    nota_maquina DECIMAL(2, 1) NOT NULL CHECK (nota_maquina >= 0 AND nota_maquina <= 5), -- Nota de 0.0 a 5.0
+    nota_produto DECIMAL(2, 1) NOT NULL CHECK (nota_produto >= 0 AND nota_produto <= 5), -- Nota de 0.0 a 5.0
+    data_avaliacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    comentario TEXT,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
+    FOREIGN KEY (id_maquina) REFERENCES vending_machines(id),
+    FOREIGN KEY (id_produto) REFERENCES produtos(id)
+               
+);
+""")
+
+
 # Confirmar as mudanças no banco de dados
 conexao.commit()
 
