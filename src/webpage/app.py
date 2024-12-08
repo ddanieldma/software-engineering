@@ -113,7 +113,7 @@ def vending_machines_page():
     db = DBConnection()
 
     query = """
-        SELECT id_maquina
+        SELECT id_maquina, is_favorite
         FROM favoritos
         WHERE id_usuario = %s
     """
@@ -121,8 +121,8 @@ def vending_machines_page():
     user_id = session.get('user_id')
 
     favorites = db.execute_query(query, (user_id,), True)
+    # favorites = [x[0] for x in favorites if x[1] == 1]
     print(favorites)
-    favorites = [favorite[0] for favorite in favorites]
 
     return render_template('vending_machines.html', vending_machines=vending_machines_products.keys(), favorites=favorites)
 
@@ -231,22 +231,30 @@ def save_favorites():
         # Cria a conexão com o banco de dados
         db = DBConnection()
 
-        # Atualiza as máquinas favoritas no banco de dados
-        query = """
-            INSERT INTO favoritos (id_usuario, id_maquina)
-            VALUES (%s, %s)
-            ON DUPLICATE KEY UPDATE id_usuario = VALUES(id_usuario), id_maquina = VALUES(id_maquina)
-        """
-
         user_id = session.get('user_id')
 
+        # Primeiro, definimos todas as máquinas de venda do usuário como não favoritas (FALSE)
+        query_reset = """
+            UPDATE favoritos
+            SET is_favorite = FALSE
+            WHERE id_usuario = %s
+        """
+        db.execute_query(query_reset, (user_id,))
+
+        # Agora, atualizamos para TRUE as máquinas que estão na lista de favoritos
+        query_update_favorites = """
+            INSERT INTO favoritos (id_usuario, id_maquina, is_favorite)
+            VALUES (%s, %s, TRUE)
+            ON DUPLICATE KEY UPDATE is_favorite = TRUE
+        """
+
         for machine_id in favorites:
-            db.execute_query(query, (user_id, machine_id))
+            db.execute_query(query_update_favorites, (user_id, machine_id))
+
         return jsonify({"message": "Favoritos salvos com sucesso."}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)

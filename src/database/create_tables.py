@@ -89,6 +89,7 @@ cursor.execute("""
 CREATE TABLE IF NOT EXISTS favoritos (
     id_usuario INT NOT NULL,
     id_maquina INT NOT NULL,
+    is_favorite BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (id_usuario, id_maquina),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
     FOREIGN KEY (id_maquina) REFERENCES vending_machines(id)
