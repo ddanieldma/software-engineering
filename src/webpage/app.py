@@ -7,9 +7,9 @@ from get_complete_data import vending_machines_products, problem_reports
 from functools import wraps
 from database_managment import DBConnection
 from flask import jsonify
-from report_builder.strategies import AddMetricsStrategy, GroupDataStrategy, FilterDataStrategy
 from report_builder.report_builder import ReportGenerator
 from flask import Response
+from report_builder.strategies import VendingMachineReportStrategy
 
 load_dotenv()
 
@@ -354,42 +354,40 @@ def save_favorites():
         return jsonify({"error": str(e)}), 500
     
 
-@app.route('/generate_report', methods=['POST'])
+@app.route('/generate_report', methods=['GET', 'POST'])
 @login_required
 def generate_report():
-    # Dados do relatório inicial
-    initial_data = [
-        {"id": 1, "value": 5, "category": "A"},
-        {"id": 2, "value": 15, "category": "B"},
-        {"id": 3, "value": 8, "category": "A"},
-    ]
-    
-    # Estratégia selecionada (via parâmetros, por exemplo)
-    strategy_name = request.form.get('strategy', 'AddMetrics')  # Exemplo: 'AddMetrics', 'GroupData', 'FilterData'
-    
-    # Mapeia os nomes das estratégias para as classes concretas
-    strategies = {
-        'AddMetrics': AddMetricsStrategy(),
-        'GroupData': GroupDataStrategy(),
-        'FilterData': FilterDataStrategy()
-    }
-    
-    # Escolhe a estratégia baseada no nome recebido
-    strategy = strategies.get(strategy_name, AddMetricsStrategy())
-    
-    # Gera o relatório usando o contexto e a estratégia selecionada
-    generator = ReportGenerator(strategy)
-    report_df = generator.generate_report(initial_data)
-    
-    # Converte o DataFrame para CSV
-    csv_data = report_df.to_csv(index=False)
-    
-    # Retorna o CSV como resposta para download
-    return Response(
-        csv_data,
-        mimetype="text/csv",
-        headers={"Content-disposition": "attachment; filename=report.csv"}
-    )
+    if request.method == 'POST':
+        # Select strategy based on user input (you can add more strategies as needed)
+        strategy = VendingMachineReportStrategy()
+
+        # Create a report generator with the selected strategy
+        report_generator = ReportGenerator(strategy)
+
+        # Generate the report using the strategy
+        report_data = report_generator.generate_report(initial_data=[])
+
+        # Extract the revenue and rating data as CSV for download
+        revenue_and_rating_csv = report_data['revenue_and_rating'].to_csv(index=False)
+        stock_csv = report_data['stock_csv']  # Already in CSV format
+        stock_json = report_data['stock_json']  # Already in JSON format
+
+        # Return multiple files (CSV and JSON) as responses
+        response = Response(
+            revenue_and_rating_csv,
+            mimetype="text/csv",
+            headers={"Content-disposition": "attachment; filename=revenue_and_rating.csv"}
+        )
+
+        # You can also provide stock_csv and stock_json similarly
+        # Or combine them into a zip file if necessary
+
+        return response  # Return the first response (you can add logic to combine CSV and JSON if necessary)
+
+    # If it's a GET request, render the strategy selection form
+    return render_template('generate_report.html')
+
+
 
 
 
