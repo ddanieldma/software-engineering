@@ -33,7 +33,7 @@
                     {{ product.get_name() }}
                 </a>
             </h3>
-            <p>Quantity: {{ quantity }}</p>
+            <p>Quantity: {{ quantity[0] }}</p>
             <p><strong>R$ {{ product.get_price() }}</strong></p>
         </div>
         {% endfor %}

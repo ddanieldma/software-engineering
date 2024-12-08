@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <div class="top-bar">
+        <h1>COFFEMAP</h1>
+        <div class="header-options">
+            <div class="language-buttons">
+                <button class="active">PT</button>
+                <button>EN</button>
+                <button>ES</button>
+            </div>
+
+        </div>
+    </div>
+    <nav class="navbar">
+        <ul> <!-- Menu de navegação -->
+            <li><a href="/">Início</a></li>
+            <li><a href="register" class="active">Criar conta</a></li>
+            <li><a href="login">Entrar</a></li>
+            <li><a href="report_problem">Reportar um problema</a></li>
+        </ul>
+    </nav>
+  </header>
+    <div class="container">
+        <form method="POST" action="/evaluate">
+            <label for="nota_produto">Nota do produto:</label>
+            <select id="nota_produto" name="nota_produto" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select><br><br>
+        
+            <label for="nota_maquina">Nota da máquina:</label>
+            <select id="nota_maquina" name="nota_maquina" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select><br><br>
+        
+            <label for="comentario">Comentários:</label>
+            <input type="text" id="comentario" name="comentario" required><br><br>
+        
+            <button type="submit" value="Register">Enviar</button>
+        </form>       
+    </div>
+  <footer>
+    <p>&copy;coffemap</p> <!-- Rodapé da página -->
+  </footer>
+</body>
+</html>

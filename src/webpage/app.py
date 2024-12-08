@@ -10,6 +10,16 @@ from functools import wraps
 
 load_dotenv()
 
+import logging
+
+# Set up logging configuration
+logging.basicConfig(
+    filename='app.log',  # Logs will be saved to this file
+    level=logging.DEBUG,  # Log all levels DEBUG and above
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
@@ -109,9 +119,53 @@ def register():
 def vending_machines_page():
     return render_template('vending_machines.html', vending_machines=vending_machines_products.keys())
 
-@app.route('/vending/<location>')
+
+@app.route('/vending/<location>', methods=['GET','POST'])
 @login_required
 def products_page(location):
+    if request.method == "POST":
+        # Extract product details from the form
+        product_name = request.form["product_name"]
+        product_price = request.form["product_price"]
+        machine_id = request.form["machine_id"]
+        user_id = session.get('user_id')  # Get the logged-in user's ID
+        product_id = request.form["product_id"]
+
+        # Store purchase info in the session
+        session['last_purchase'] = {
+            'product_id': product_name,
+            'product_price': product_price,
+            'machine_id': machine_id,
+            'user_id': user_id,
+            'product_id': product_id
+        }
+
+        try:
+            # Connect to the database
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Insert the purchase record into the 'compras' table
+            cursor.execute("""
+                INSERT INTO compras (product_name, product_price, machine_id, user_id)
+                VALUES (%s, %s, %s, %s)
+            """, (product_name, product_price, machine_id, user_id))
+
+            # Commit the transaction
+            conn.commit()
+
+            cursor.close()
+            conn.close()
+
+            flash('Buy registered', 'success')
+
+            # Redirect to the evaluation page
+            return redirect('/evaluate')
+
+        except Exception as err:
+            flash(f'Error: {err}', 'danger')
+
+    # Retrieve and display products if the request method is GET
     vending_machine = next((vm for vm in vending_machines_products.keys() if vm.get_location() == location), None)
     if vending_machine:
         machine_products = vending_machines_products.get(vending_machine, {})
@@ -191,6 +245,69 @@ def home():
 def admin_page():
     return render_template('admin_page.html')
 
+@app.route('/evaluate', methods=['GET', 'POST'])
+@login_required
+def evaluate():
+    # Retrieve purchase info from session
+    purchase_info = session.get('last_purchase')
+
+    if not purchase_info:
+        flash('No purchase information available. Please make a purchase first.', 'danger')
+        logging.warning("Evaluation attempted without purchase information.")
+        return redirect('/vending')  # Redirect back to vending page if no purchase was made
+
+    # Log the retrieved purchase info
+    logging.debug(f"Retrieved purchase info: {purchase_info}")
+
+    if request.method == 'POST':
+        # Retrieve user inputs from the form
+        nota_produto = request.form.get('nota_produto')
+        nota_maquina = request.form.get('nota_maquina')
+        comentario = request.form.get('comentario', '')
+
+        # Retrieve stored purchase info
+        machine_id = purchase_info.get('machine_id')
+        user_id = purchase_info.get('user_id')
+        product_id = purchase_info.get('product_id')
+
+        # Log the evaluation data being processed
+        logging.debug(
+            f"Evaluation data: user_id={user_id}, machine_id={machine_id}, product_id={product_id}, "
+            f"nota_produto={nota_produto}, nota_maquina={nota_maquina}, comentario={comentario}"
+        )
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Insert evaluation into the 'avaliacoes' table
+            cursor.execute("""
+                INSERT INTO avaliacoes (id_usuario, id_maquina, id_produto, nota_produto, nota_maquina, comentario)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (user_id, machine_id, product_id, nota_produto, nota_maquina, comentario))
+
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            # Log successful insertion
+            logging.info(f"Evaluation successfully inserted: user_id={user_id}, product_id={product_id}, machine_id={machine_id}.")
+
+            # Clear the purchase info from the session after saving the evaluation
+            session.pop('last_purchase', None)
+
+            flash('Avaliação registrada com sucesso!', 'success')
+            return redirect('/evaluate')
+        except Exception as err:
+            # Log the error details
+            logging.error(f"Error inserting evaluation into the database: {err}")
+            flash(f'Erro ao registrar avaliação: {err}', 'danger')
+
+    return render_template('evaluation.html', purchase_info=purchase_info)
+
+
+
+
 @app.route('/user_home')
 @login_required
 def user_home():
@@ -205,3 +322,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
+

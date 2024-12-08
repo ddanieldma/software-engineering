@@ -353,12 +353,12 @@ class VendingMachine:
             dict: A dictionary with products as keys and their stock as values.
         """
         query = """
-        SELECT nome, estoque FROM produtos WHERE id_vending_machine = %s
+        SELECT nome, estoque, id FROM produtos WHERE id_vending_machine = %s
         """
         result = DBConnection().execute_query(query, (self._id,), fetch_all=True)
 
         # Update local stock cache
-        self._stock = defaultdict(int, {Product(name, self._id): stock for name, stock in result})
+        self._stock = defaultdict(int, {Product(name, self._id): (stock,id) for name, stock, id in result})
 
         return dict(self._stock)
     
