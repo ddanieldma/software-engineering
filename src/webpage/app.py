@@ -7,6 +7,8 @@ from get_complete_data import vending_machines_products, problem_reports
 from functools import wraps
 from database_managment import DBConnection
 from flask import jsonify
+from user import PersonDB
+import vending
 
 load_dotenv()
 
@@ -196,12 +198,16 @@ def home():
 @app.route('/admin')
 @admin_required
 def admin_page():
-    return render_template('admin_page.html')
+    user = PersonDB(session.get('user_id'))
+    notifications = user.get_notifications()
+    return render_template('admin_page.html', lista_de_strings=notifications)
 
 @app.route('/user_home')
 @login_required
 def user_home():
-    return render_template('user_page.html')
+    user = PersonDB(session.get('user_id'))
+    notifications = user.get_notifications()
+    return render_template('user_page.html', lista_de_strings=notifications)
 
 @app.route('/logout')
 def logout():
@@ -241,10 +247,14 @@ def save_favorites():
         for machine_id in favorites:
             db.execute_query(query_update_favorites, (user_id, machine_id))
 
+        for machine_id in favorites:
+            vending.VendingMachine(machine_id).subscribe(PersonDB(user_id))
+            
         return jsonify({"message": "Favoritos salvos com sucesso."}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

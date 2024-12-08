@@ -30,6 +30,7 @@ class PersonDB():
             raise ValueError(f"User ID {self._id} not found in the database.")
         
         _, self._name, self._email, self._password, self._role, self._is_admin, self._is_seller, self._created_at = result
+        self._notifications = ["18 novos produtos foram adicionados ao estoque da vending machine 1.", "5 novos produtos foram adicionados ao estoque da vending machine 3."]
 
 
     def get_id(self):
@@ -67,6 +68,26 @@ class PersonDB():
             str: The name of the person.
         """
         return self._name
+    
+    def notify(self, vending_machine, product, quantity):
+        """
+        Update the favorite status of a vending machine for the user.
+
+        Args:
+            vending_machine (VendingMachine): The vending machine to update.
+            product (Product): The product being changed.
+            quantity (int): The quantity of the product being changed.
+        """
+        self._notifications.append(f"Notification: {quantity} {product.get_name()} added to {vending_machine.get_location()}")
+
+    def get_notifications(self):
+        """
+        Get the notifications for the user.
+
+        Returns:
+            list: A list of notifications for the user.
+        """
+        return self._notifications
 
 
 # Custom exception for permission handling errors
@@ -147,6 +168,7 @@ class User(Person):
         """
         super().__init__(name, email, password)
         self._user_id = user_id
+        self._notifications = []
 
     def get_role(self):
         """
@@ -175,8 +197,7 @@ class User(Person):
         if not isinstance(vending_place, v.VendingPlace):
             raise ValueError("Invalid vending place")
         
-        return vending_place.simulate_purchase(product, quantity)
-
+        return vending_place.simulate_purchase(product, quantity)        
 
 # Admin class
 class Admin(Person):

@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from database_managment import DBConnection
 
-
 class Product:
     """
     Represents a product available in a vending machine.
@@ -33,6 +32,7 @@ class Product:
             name (str): The name of the product.
             id_vending_machine (int): The ID of the vending machine containing the product.
         """
+        self._id = None
         self._name = name
         self._id_vending_machine = id_vending_machine
         self._description = None
@@ -48,13 +48,13 @@ class Product:
             ValueError: If the product is not found in the vending machine.
         """
         query = """
-        SELECT descricao, preco, categoria, imagem_url FROM produtos
+        SELECT id, descricao, preco, categoria, imagem_url FROM produtos
         WHERE nome = %s AND id_vending_machine = %s
         """
         result = DBConnection().execute_query(query, (self._name, self._id_vending_machine))
 
         if result:
-            self._description, self._price, self._category, self._img_url = result
+            self._id, self._description, self._price, self._category, self._img_url = result
         else:
             raise ValueError(f"Product '{self._name}' not found in vending machine {self._id_vending_machine}.")
 
@@ -137,6 +137,17 @@ class Product:
         if self._img_url is None:
             self.load_from_db()
         return self._img_url
+    
+    def get_id(self):
+        """
+        Retrieves the ID of the product.
+
+        Returns:
+            int: The product ID.
+        """
+        if self._id is None:
+            self.load_from_db()
+        return self._id
 
     def __repr__(self):
         """
@@ -295,6 +306,7 @@ class VendingMachine:
         self._location: str | None = None
         self._id: int = id
         self._stock: defaultdict = defaultdict(int)  # Cache for product stock
+        self._observers = []
 
     def get_id(self) -> int:
         """
@@ -401,9 +413,10 @@ class VendingMachine:
 
         # Update the stock in the database
         query = "UPDATE produtos SET estoque = %s WHERE id_vending_machine = %s AND nome = %s"
+        self.notify_observers(1, 2)
         result = DBConnection().execute_query(query, (quantity, self._id, product))
 
-        if result.rowcount == 0:
+        if result is None or result.rowcount == 0:
             raise ValueError(f"Product '{product}' not found in this vending machine.")
         
         # Update the local stock cache
@@ -421,6 +434,35 @@ class VendingMachine:
         """
         if not isinstance(quantity, int) or quantity < 0:
             raise ValueError("Quantity must be a non-negative integer.")
+        
+    def subscribe(self, observer):
+        """
+        Adds an observer to the vending machine.
+        
+        Args:
+            observer (Observer): The observer to add.
+        """
+        self._observers.append(observer)
+
+    def unsubscribe(self, observer):
+        """
+        Removes an observer from the vending machine.
+        
+        Args:
+            observer (Observer): The observer to remove.
+        """
+        if observer in self._observers:
+            self._observers.remove(observer)
+        else:
+            print("Observer not found")
+
+    def notify_observers(self, product, quantity):
+        """
+        Notifies all observers of the vending machine. (Observer pattern)
+        """
+        for observer in self._observers:
+            print("Notifying observer")
+            observer.notify(self, product, quantity)
 
     def __repr__(self) -> str:
         """
