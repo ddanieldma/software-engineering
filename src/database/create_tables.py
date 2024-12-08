@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS ratings (
 """)
 
 cursor.execute("""
-CREATE TABLE coffe_map.compras (
+CREATE TABLE IF NOT EXISTS coffe_map.compras (
     id INT AUTO_INCREMENT PRIMARY KEY,        -- Unique identifier for each purchase
     user_id INT NOT NULL,                     -- ID of the user making the purchase
     product_name VARCHAR(255) NOT NULL,       -- Name of the purchased product
@@ -97,22 +97,25 @@ CREATE TABLE coffe_map.compras (
 );
 """
 )
+
+cursor.execute("""
+DROP TABLE `coffe_map`.`avaliacoes`;
+""")
                
 # Criar tabela de avaliações
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS avaliacoes (
+CREATE TABLE IF NOT EXISTS coffe_map.avaliacoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_maquina INT NOT NULL,
     id_produto INT NOT NULL,
-    nota_maquina DECIMAL(2, 1) NOT NULL CHECK (nota_maquina >= 0 AND nota_maquina <= 5), -- Nota de 0.0 a 5.0
-    nota_produto DECIMAL(2, 1) NOT NULL CHECK (nota_produto >= 0 AND nota_produto <= 5), -- Nota de 0.0 a 5.0
+    nota_maquina INT NOT NULL CHECK (nota_maquina >= 1 AND nota_maquina <= 5), -- Nota entre 1 e 5
+    nota_produto INT NOT NULL CHECK (nota_produto >= 1 AND nota_produto <= 5), -- Nota entre 1 e 5
     data_avaliacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    comentario TEXT,
+    comentario VARCHAR(140), -- Comentário com no máximo 140 caracteres
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
     FOREIGN KEY (id_maquina) REFERENCES vending_machines(id),
     FOREIGN KEY (id_produto) REFERENCES produtos(id)
-               
 );
 """)
 
