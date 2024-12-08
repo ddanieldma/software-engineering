@@ -62,4 +62,4 @@ python webpage/app.py
 E então abrir o localhost na porta 5000. A partir desse ponto a exploração da aplicação fica a critério do usuário.
 
 
-O relatório do projeto pode ser encontrado [Aqui.](https://drive.google.com/file/d/1U_IiqyixMoM4e7UEmPZl9ncP_E7ku_F0/view?usp=sharing)
+O relatório do projeto pode ser encontrado [Aqui.]([https://drive.google.com/file/d/1U_IiqyixMoM4e7UEmPZl9ncP_E7ku_F0/view?usp=sharing](https://drive.google.com/file/d/1KdjQkpWZ2GQitagik927Da1I8E-oTp3T/view?usp=sharing))
